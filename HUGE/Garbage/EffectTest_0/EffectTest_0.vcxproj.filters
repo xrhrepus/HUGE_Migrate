@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="BufferType.h" />
+    <ClInclude Include="MyAppState.h" />
+    <ClInclude Include="ShaderEffects.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MyAppState.cpp" />
+    <ClCompile Include="ShaderEffects.cpp" />
+    <ClCompile Include="WinMain.cpp" />
+  </ItemGroup>
+</Project>

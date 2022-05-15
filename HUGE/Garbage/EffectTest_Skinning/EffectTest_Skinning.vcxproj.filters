@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="MyAppState.h" />
+    <ClInclude Include="MBAObject.h" />
+    <ClInclude Include="TAnimator.h" />
+    <ClInclude Include="MBAObject_Transform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MyAppState.cpp" />
+    <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="MBAObject.cpp" />
+    <ClCompile Include="TAnimator.cpp" />
+    <ClCompile Include="MBAObject_Transform.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,8 @@
+#ifndef HUGE_PHYSICS_PRECOMPILED_H
+#define HUGE_PHYSICS_PRECOMPILED_H
+
+#include "Common.h"
+
+
+
+#endif // !HUGE_PHYSICS_PRECOMPILED_H

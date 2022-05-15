@@ -1,0 +1,34 @@
+{
+  "Services": {
+    "CameraService": {},
+    "TerrainService": {
+
+      "NumRows": 15,
+      "NumCols": 15,
+      "CellSize": 10
+
+    }
+  },
+    "GameObjects": [
+      {
+        "Name": "asd123456",
+        "Template": "test.json",
+        "Components": {
+          "TransformComponent": {
+            "Position": {
+              "x": 2,
+              "y": 0,
+              "z": 5
+            },
+            "Rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            }
+          }
+        }
+      }
+    ]
+
+}

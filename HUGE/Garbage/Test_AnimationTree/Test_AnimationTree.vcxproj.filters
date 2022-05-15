@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="MBAObject.cpp" />
+    <ClCompile Include="MBAObject_Transform.cpp" />
+    <ClCompile Include="MyAppState.cpp" />
+    <ClCompile Include="ShaderEffects.cpp" />
+    <ClCompile Include="TAnimator.cpp" />
+    <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="HugeEditorWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MBAObject.h" />
+    <ClInclude Include="MBAObject_Transform.h" />
+    <ClInclude Include="MyAppState.h" />
+    <ClInclude Include="ShaderEffects.h" />
+    <ClInclude Include="TAnimator.h" />
+    <ClInclude Include="HugeEditorWindow.h" />
+  </ItemGroup>
+</Project>

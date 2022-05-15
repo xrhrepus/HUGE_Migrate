@@ -1,0 +1,7 @@
+Count: 6
+universe_32.png
+flower_32.png
+stone2_32.png
+mountain_32.png
+water_32.png
+snow_32.png
