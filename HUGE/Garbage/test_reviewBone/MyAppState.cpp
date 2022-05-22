@@ -9,6 +9,22 @@ using namespace H::Input;
  
 void MyAppState::Initialize()
 {
+
+	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
+	mDl.diffuse = 1.0f;
+	mDl.ambient = 1.0f;
+	ltb.Initialize(mDl);
+	//
+	tfd.world = Matrix4::Identity();
+	tfb.Initialize(tfd);
+	//
+	mt.ambient = Colors::Red;
+	mt.diffuse = Colors::Red;
+	mt.ambient = Colors::Red;
+	mt.ambient = Colors::Red;
+	mtb.Initialize(mt);
+
+
 	//camera
 	mCamera.SetPosition({ -121.0f, 75.0f, 100.0f });
 	//mCurrentCam.SetDirection({ 0.0f,0.0f, 1.0f });
@@ -16,17 +32,61 @@ void MyAppState::Initialize()
 
 	mCurrentCam = &mCamera;
 
-	mTentacle = MeshBuilder::CreateFourBoneTentacle(10.0f, 2.0f, 4, Vector3::Zero());
+	mMesh = MeshBuilder::CreateCube(10.0f, 10.0f, 10.0f, Vector3::Zero());
+	mMb.Initialize(mMesh);
+	vs.Initialize(OLD_STANDARD_FILE_PATH);
+	ps.Initialize(OLD_STANDARD_FILE_PATH,"PS");
+	tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
  }
 
 void MyAppState::Terminate()
 {
+	mMb.Terminate();
+	vs.Terminate();
+	ps.Terminate();
+
+	tfb.Terminate();
+	mtb.Terminate();
+	ltb.Terminate();
 
  }
 
+void MyAppState::RenderScene()
+{
+//
+	Matrix4 vm = mCurrentCam->GetViewMatrix();
+	Matrix4 pm = mCurrentCam->GetPerspectiveMatrix();
+	Matrix4 world = Matrix4::Identity();
+
+	tfd.world = H::Math::Transpose(world);
+	tfd.viewPosition = mCurrentCam->GetPosition();
+	tfd.wvp = H::Math::Transpose(world * vm * pm);
+	tfb.Set(tfd);
+//
+	mtb.Set(mt);
+//
+	ltb.Set(mDl);
+//
+	vs.Bind();
+	TextureManager::Get()->GetTexture(tx)->BindPS();
+	ps.Bind();
+
+	tfb.BindVS(0);
+	tfb.BindPS(0);
+
+	mtb.BindVS(2);
+	mtb.BindPS(2);
+
+	ltb.BindVS(1);
+	ltb.BindPS(1);
+
+	mMb.Render();
+}
 
 void MyAppState::Render()
 {
+	_drawGrid();
+
 	RenderScene();
 }
 
@@ -38,6 +98,13 @@ void MyAppState::Update(float deltatime)
 
 void MyAppState::DebugUI()
 {
+	ImGui::Begin("he");
+	if (ImGui::CollapsingHeader("Light"))
+	{
+		ImGui::SliderFloat3("dir", mDl.direction.v.data(), 0.0f, 1.0f);
+	}
+	ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(tx)), { 100.0f,100.0f });
+	ImGui::End();
 }
 
 void MyAppState::_drawGrid()
@@ -59,11 +126,6 @@ void MyAppState::_drawGrid()
 	SimpleDraw::Render(*mCurrentCam);
 }
 
-void MyAppState::RenderScene()
-{
-	_drawGrid();
- 
-}
 
 void MyAppState::PostProcess()
 {
