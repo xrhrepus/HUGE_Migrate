@@ -9,6 +9,9 @@ using namespace H::Input;
  
 void MyAppState::Initialize()
 {
+	//
+	stdFx.Initialize();
+	//
 
 	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
 	mDl.diffuse = 1.0f;
@@ -41,6 +44,8 @@ void MyAppState::Initialize()
 
 void MyAppState::Terminate()
 {
+	stdFx.Terminate();
+
 	mMb.Terminate();
 	vs.Terminate();
 	ps.Terminate();
@@ -62,25 +67,38 @@ void MyAppState::RenderScene()
 	tfd.viewPosition = mCurrentCam->GetPosition();
 	tfd.wvp = H::Math::Transpose(world * vm * pm);
 	tfb.Set(tfd);
+////
+//	mtb.Set(mt);
+////
+//	ltb.Set(mDl);
+////
+//	vs.Bind();
+//	TextureManager::Get()->GetTexture(tx)->BindPS();
+//	ps.Bind();
 //
-	mtb.Set(mt);
+//	tfb.BindVS(0);
+//	tfb.BindPS(0);
 //
-	ltb.Set(mDl);
+//	mtb.BindVS(2);
+//	mtb.BindPS(2);
 //
-	vs.Bind();
-	TextureManager::Get()->GetTexture(tx)->BindPS();
-	ps.Bind();
+//	ltb.BindVS(1);
+//	ltb.BindPS(1);
+//
+//	mMb.Render();
 
-	tfb.BindVS(0);
-	tfb.BindPS(0);
-
-	mtb.BindVS(2);
-	mtb.BindPS(2);
-
-	ltb.BindVS(1);
-	ltb.BindPS(1);
-
-	mMb.Render();
+	//
+	stdFxCtx.camera = mCurrentCam;
+	stdFxCtx.directionalLight = mDl;
+	stdFxCtx.material = mt;
+	stdFxCtx.transformData = tfd;
+	stdFxCtx.meshBuffer = &mMb;
+	stdFxCtx.diffuse = tx;
+	//==
+	stdFx.SetContextInfo(&stdFxCtx); // can be private, can take ref
+	stdFx.Bind();
+	stdFx.Render(&stdFxCtx); // this does setCtxInfo
+	//
 }
 
 void MyAppState::Render()

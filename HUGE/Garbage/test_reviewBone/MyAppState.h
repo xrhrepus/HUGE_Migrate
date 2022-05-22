@@ -20,7 +20,12 @@ private:
 	void PostProcess();
 
 private:
-	BoneMesh mTentacle;
+	//use se
+	ShaderEffect_Standard stdFx;
+	ShaderEffect_Standard::SE_Context_Standard stdFxCtx;
+	//use hmeshrd
+	
+private:
 
 	DirectionalLight mDl;
 	LightBuffer ltb;
