@@ -22,10 +22,6 @@ void MyAppState::Initialize()
 	ps.Initialize(OLD_STANDARD_FILE_PATH, "PS");
 	tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
 
-	//
-	stdFx.Initialize();
-	//
-
 	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
 	mDl.diffuse = 1.0f;
 	mDl.ambient = 1.0f;
@@ -47,8 +43,6 @@ void MyAppState::Initialize()
 
 void MyAppState::Terminate()
 {
-	stdFx.Terminate();
-
 	mMb.Terminate();
 	vs.Terminate();
 	ps.Terminate();
@@ -56,7 +50,6 @@ void MyAppState::Terminate()
 	tfb.Terminate();
 	mtb.Terminate();
 	ltb.Terminate();
-
  }
 
 void MyAppState::RenderScene()
@@ -93,18 +86,6 @@ void MyAppState::RenderScene()
 //
 //	mMb.Render();
 
-	////
-	//stdFxCtx.camera = mCurrentCam;
-	//stdFxCtx.directionalLight = mDl;
-	//stdFxCtx.material = mt;
-	//stdFxCtx.transformData = tfd;
-	//stdFxCtx.meshBuffer = &mMb;
-	//stdFxCtx.diffuse = tx;
-	////==
-	//stdFx.SetContextInfo(stdFxCtx); // can be private, can take ref
-	//stdFx.Bind();
-	//stdFx.Render(stdFxCtx); // this does setCtxInfo
-	////
 }
 
 void MyAppState::Render()

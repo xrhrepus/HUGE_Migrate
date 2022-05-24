@@ -21,10 +21,6 @@ private:
 	void PostProcess();
 
 private:
-	//use se
-	ShaderEffect_Standard stdFx;
-	ShaderEffect_Standard::SE_Context_Standard stdFxCtx;
-	//use hmeshrd
 	//use t mesh rd
 	std::unique_ptr<T_MeshRenderer> tMeshRd;
 private:

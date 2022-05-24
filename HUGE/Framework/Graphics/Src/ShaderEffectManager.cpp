@@ -53,6 +53,7 @@ bool ShaderEffectManager::AddEffect(std::unique_ptr<ShaderEffect>&& shaderEffect
 	if (!shaderEffect) {
 		return false;
 	}
+	shaderEffect->Initialize();
 	auto[iter, success] = mInventory.try_emplace(name, std::move(shaderEffect));
 	ASSERT(success, "[Graphic::ShaderEffectManager::AddEffect] Shader effect name already existed.");
 	return success;
