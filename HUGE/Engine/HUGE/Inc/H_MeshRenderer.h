@@ -20,7 +20,7 @@ namespace H
 
 
 	private:
-		ShaderEffect_Standard* mStandardShaderEffect;
+		const ShaderEffect_Standard* mStandardShaderEffect;
 		ShaderEffect_Standard::SE_Context_Standard mStandardContext;
 		Mesh mMesh;
 		MeshBuffer mMeshBuffer;

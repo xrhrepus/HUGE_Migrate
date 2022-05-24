@@ -89,15 +89,15 @@ void MyAppState::RenderScene()
 
 	//
 	stdFxCtx.camera = mCurrentCam;
-	stdFxCtx.directionalLight = mDl;
-	stdFxCtx.material = mt;
-	stdFxCtx.transformData = tfd;
+	stdFxCtx.directionalLight = &mDl;
+	stdFxCtx.material = &mt;
+	stdFxCtx.transformData = &tfd;
 	stdFxCtx.meshBuffer = &mMb;
 	stdFxCtx.diffuse = tx;
 	//==
-	stdFx.SetContextInfo(&stdFxCtx); // can be private, can take ref
+	stdFx.SetContextInfo(stdFxCtx); // can be private, can take ref
 	stdFx.Bind();
-	stdFx.Render(&stdFxCtx); // this does setCtxInfo
+	stdFx.Render(stdFxCtx); // this does setCtxInfo
 	//
 }
 
