@@ -89,6 +89,11 @@ H::Graphics::ShaderEffect_Standard::ShaderEffect_Standard()
 	ShaderEffect::DEFAULT_FILE_PATH = ShaderEffect_Standard::DEFAULT_FILE_PATH;
 }
 
+std::unique_ptr<H::Graphics::ShaderEffectContext> H::Graphics::ShaderEffect_Standard::CreateShaderEffectContext() const
+{
+	return std::make_unique<SE_Context_Standard>();
+}
+
 void H::Graphics::ShaderEffect_Standard::SetValue_TransformBuffer(const TransformData & tdata) const
 {
 	mTransformBuf->Set(tdata);
@@ -232,37 +237,25 @@ void H::Graphics::ShaderEffect_Standard::UnBind_Other_Buffers() const
 	//mSampler->UnBindPS(0);
 }
 
-void H::Graphics::ShaderEffect_Standard::RenderData::DebugUI()
+void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 {
-	ImGui::Begin("Standard Effect Data");
-
-	ImGui::End();
+	if (ImGui::CollapsingHeader("StandardEffect"))
+	{
+		if (ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x)))
+		{
+		}
+	}
 }
 
 void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContext& context) const
 {
 	const auto& stdContext = static_cast<const SE_Context_Standard&>(context);
-	// dumb
-	if (stdContext.transformData)
-	{
-		SetValue_TransformBuffer(*stdContext.transformData);
-	}
-	if (stdContext.directionalLight)
-	{
-		SetValue_LightBuffer(*stdContext.directionalLight);
-	}
-	if (stdContext.material)
-	{
-		SetValue_MaterialBuffer(*stdContext.material);
-	}
-	if (stdContext.settings)
-	{
-		SetValue_SettingsBuffer(*stdContext.settings);
-	}
-	if (stdContext.shadow)
-	{
-		SetValue_ShadowBuffer(*stdContext.shadow);
-	}
+
+	SetValue_TransformBuffer(stdContext.transformData);
+	SetValue_LightBuffer(stdContext.directionalLight);
+	SetValue_MaterialBuffer(stdContext.material);
+	SetValue_SettingsBuffer(stdContext.settings);
+	SetValue_ShadowBuffer(stdContext.shadow);
 
 	if (stdContext.diffuse != 0)
 	{
@@ -290,13 +283,7 @@ void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContex
 	}
 
 }
-void H::Graphics::ShaderEffect_Standard::Render(const ShaderEffectContext& context)
-{
-	SetContextInfo(context);
-	Bind();
-	context.meshBuffer->Render();
-	UnBind();
-}
+
  #pragma endregion
 
 //#pragma region ToonShading

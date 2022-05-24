@@ -9,6 +9,19 @@ using namespace H::Input;
  
 void MyAppState::Initialize()
 {
+	//camera
+	mCamera.SetPosition({ -121.0f, 75.0f, 100.0f });
+	//mCurrentCam.SetDirection({ 0.0f,0.0f, 1.0f });
+	mCamera.SetDirection(H::Math::Normalize(Vector3{ 121.0f, -75.0f, -100.0f }));
+
+	mCurrentCam = &mCamera;
+
+	mMesh = MeshBuilder::CreateCube(10.0f, 10.0f, 10.0f, Vector3::Zero());
+	mMb.Initialize(mMesh);
+	vs.Initialize(OLD_STANDARD_FILE_PATH);
+	ps.Initialize(OLD_STANDARD_FILE_PATH, "PS");
+	tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
+
 	//
 	stdFx.Initialize();
 	//
@@ -27,19 +40,9 @@ void MyAppState::Initialize()
 	mt.ambient = Colors::Red;
 	mtb.Initialize(mt);
 
-
-	//camera
-	mCamera.SetPosition({ -121.0f, 75.0f, 100.0f });
-	//mCurrentCam.SetDirection({ 0.0f,0.0f, 1.0f });
-	mCamera.SetDirection(H::Math::Normalize(Vector3{ 121.0f, -75.0f, -100.0f }));
-
-	mCurrentCam = &mCamera;
-
-	mMesh = MeshBuilder::CreateCube(10.0f, 10.0f, 10.0f, Vector3::Zero());
-	mMb.Initialize(mMesh);
-	vs.Initialize(OLD_STANDARD_FILE_PATH);
-	ps.Initialize(OLD_STANDARD_FILE_PATH,"PS");
-	tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
+	//
+	tMeshRd = std::make_unique<T_MeshRenderer>(mMesh);
+	//
  }
 
 void MyAppState::Terminate()
@@ -67,6 +70,9 @@ void MyAppState::RenderScene()
 	tfd.viewPosition = mCurrentCam->GetPosition();
 	tfd.wvp = H::Math::Transpose(world * vm * pm);
 	tfb.Set(tfd);
+
+	tMeshRd->Render();
+
 ////
 //	mtb.Set(mt);
 ////
@@ -87,18 +93,18 @@ void MyAppState::RenderScene()
 //
 //	mMb.Render();
 
-	//
-	stdFxCtx.camera = mCurrentCam;
-	stdFxCtx.directionalLight = &mDl;
-	stdFxCtx.material = &mt;
-	stdFxCtx.transformData = &tfd;
-	stdFxCtx.meshBuffer = &mMb;
-	stdFxCtx.diffuse = tx;
-	//==
-	stdFx.SetContextInfo(stdFxCtx); // can be private, can take ref
-	stdFx.Bind();
-	stdFx.Render(stdFxCtx); // this does setCtxInfo
-	//
+	////
+	//stdFxCtx.camera = mCurrentCam;
+	//stdFxCtx.directionalLight = mDl;
+	//stdFxCtx.material = mt;
+	//stdFxCtx.transformData = tfd;
+	//stdFxCtx.meshBuffer = &mMb;
+	//stdFxCtx.diffuse = tx;
+	////==
+	//stdFx.SetContextInfo(stdFxCtx); // can be private, can take ref
+	//stdFx.Bind();
+	//stdFx.Render(stdFxCtx); // this does setCtxInfo
+	////
 }
 
 void MyAppState::Render()
@@ -116,6 +122,8 @@ void MyAppState::Update(float deltatime)
 
 void MyAppState::DebugUI()
 {
+	tMeshRd->DebugUI();
+
 	ImGui::Begin("he");
 	if (ImGui::CollapsingHeader("Light"))
 	{

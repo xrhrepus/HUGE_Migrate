@@ -35,8 +35,8 @@ void ShaderEffectManager::Initialize()
 {
 	//AddEffect("Texturing", path_Texturing);
 	AddEffect(std::make_unique<ShaderEffect_Standard>(),"Standard");
-	AddEffect(std::make_unique<ShaderEffect_Skinning>(),"Skinning");
-	AddEffect(std::make_unique<ShaderEffect_Toon>(), "Toon");
+	//AddEffect(std::make_unique<ShaderEffect_Skinning>(),"Skinning");
+	//AddEffect(std::make_unique<ShaderEffect_Toon>(), "Toon");
 
 }
 void ShaderEffectManager::Terminate()

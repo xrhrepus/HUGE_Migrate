@@ -13,8 +13,8 @@ namespace H::Graphics
 	class Camera;
 	struct ShaderEffectContext
 	{
+		virtual void DebugUI() = 0;
 		Camera* camera = nullptr;
-		MeshBuffer* meshBuffer = nullptr;
 	};
  
 
@@ -25,9 +25,8 @@ namespace H::Graphics
  		void Initialize();
 		void Initialize(std::filesystem::path file);
 		void Bind() const;
+		virtual std::unique_ptr<ShaderEffectContext> CreateShaderEffectContext() const = 0;
 		virtual void SetContextInfo(const ShaderEffectContext& context) const = 0;
-		virtual void Render(const ShaderEffectContext& context) = 0;
-
 		void UnBind() const;
 		void Terminate();
 		std::string GetShaderFilePath();
@@ -72,11 +71,9 @@ namespace H::Graphics
 		using SettingsBuffer = H::Graphics::TypedConstantBuffer<Settings>;
 		using ShadowDataBuffer = H::Graphics::TypedConstantBuffer<ShadowData>;
 
-		// a data version of context. simulating data from other assets
-		struct RenderData
+		struct SE_Context_Standard : public ShaderEffectContext
 		{
-			void DebugUI();
-			Mesh mesh;
+			void DebugUI() override;
 
 			TransformData transformData;
 			DirectionalLight directionalLight;
@@ -91,24 +88,6 @@ namespace H::Graphics
 			TextureId ao = 0;
 			TextureId depth = 0;
 		};
-
-		// the read only context which will get passed to respective shader effect
-		struct SE_Context_Standard : public ShaderEffectContext
-		{
-			const Mesh* mesh = nullptr;
-			const TransformData* transformData = nullptr;
-			const DirectionalLight* directionalLight = nullptr;
-			const Material* material = nullptr;
-			const Settings* settings = nullptr;
-			const ShadowData* shadow = nullptr;
- 
-			TextureId diffuse = 0;
-			TextureId specular = 0;
-			TextureId dispalcement = 0;
-			TextureId normal = 0;
-			TextureId ao = 0;
-			TextureId depth = 0;
-		};
 #pragma endregion
 
 #pragma region SetValueFunctions
@@ -116,6 +95,7 @@ namespace H::Graphics
 	public:
 
  		ShaderEffect_Standard();
+		std::unique_ptr<ShaderEffectContext> CreateShaderEffectContext() const override;
 #pragma region SetValueFunctions
 
   		//set buf values
@@ -135,7 +115,6 @@ namespace H::Graphics
 		void SetValue_DepthMap(TextureId tid) const;
 
 		void SetContextInfo(const ShaderEffectContext& context) const override;
-		void Render(const ShaderEffectContext& context) override;
 
 #pragma endregion
 

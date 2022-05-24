@@ -1,6 +1,7 @@
 #pragma once
 #include <HUGE\Inc\AppState.h>
 #include <HUGE\Inc\HUGE.h>
+#include "T_MeshRenderer.h"
 using namespace H;
 using namespace H::Graphics;
  
@@ -24,7 +25,8 @@ private:
 	ShaderEffect_Standard stdFx;
 	ShaderEffect_Standard::SE_Context_Standard stdFxCtx;
 	//use hmeshrd
-	
+	//use t mesh rd
+	std::unique_ptr<T_MeshRenderer> tMeshRd;
 private:
 
 	DirectionalLight mDl;
