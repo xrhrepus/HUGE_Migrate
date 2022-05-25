@@ -242,10 +242,19 @@ void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 {
 	if (ImGui::CollapsingHeader("StandardEffect"))
 	{
-		ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x));
-		ImGui::ColorPicker3("Ambient color", &(material.ambient.x));
-		ImGui::ColorPicker3("Specular color", &(material.specular.x));
-		ImGui::DragFloat("Power", &(material.power));
+		if (ImGui::TreeNode("Material color"))
+		{
+			ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x));
+			ImGui::ColorPicker3("Ambient color", &(material.ambient.x));
+			ImGui::ColorPicker3("Specular color", &(material.specular.x));
+			ImGui::DragFloat("Power", &(material.power),0.1f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Settings"))
+		{
+			ImGui::DragFloat("Brightness", &(settings.brightness),0.1f);
+			ImGui::TreePop();
+		}
 
 		ImGui::Text("Diffuse texture");
 		ImGui::NewLine();
