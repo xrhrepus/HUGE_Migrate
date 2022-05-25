@@ -244,9 +244,9 @@ void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 	{
 		if (ImGui::TreeNode("Material color"))
 		{
-			ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x));
-			ImGui::ColorPicker3("Ambient color", &(material.ambient.x));
-			ImGui::ColorPicker3("Specular color", &(material.specular.x));
+			ImGui::ColorEdit3("Diffuse color", &(material.diffuse.x));
+			ImGui::ColorEdit3("Ambient color", &(material.ambient.x));
+			ImGui::ColorEdit3("Specular color", &(material.specular.x));
 			ImGui::DragFloat("Power", &(material.power),0.1f);
 			ImGui::TreePop();
 		}

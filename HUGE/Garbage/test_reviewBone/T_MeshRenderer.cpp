@@ -166,6 +166,10 @@ void T_Light::DebugUI()
 		{
 			dirChange = true;
 		}
+		ImGui::ColorEdit3("light diffuse", &light.diffuse.r, 0.1f);
+		ImGui::ColorEdit3("light ambient", &light.ambient.r, 0.1f);
+		ImGui::ColorEdit3("light specular", &light.specular.r, 0.1f);
+
 		if (dirChange)
 		{
 			light.direction = H::Math::Normalize(light.direction);
