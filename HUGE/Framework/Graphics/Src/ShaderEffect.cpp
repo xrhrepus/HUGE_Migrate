@@ -168,6 +168,7 @@ void H::Graphics::ShaderEffect_Standard::SetValue_DepthMap(TextureId tid) const
 
 }
 
+
 void H::Graphics::ShaderEffect_Standard::InitBuffers()
 {
 	mTransformBuf = std::make_unique<H::Graphics::TransformBuffer>();
@@ -241,8 +242,17 @@ void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 {
 	if (ImGui::CollapsingHeader("StandardEffect"))
 	{
-		if (ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x)))
+		ImGui::ColorPicker3("Diffuse color", &(material.diffuse.x));
+		ImGui::ColorPicker3("Ambient color", &(material.ambient.x));
+		ImGui::ColorPicker3("Specular color", &(material.specular.x));
+		ImGui::DragFloat("Power", &(material.power));
+
+		ImGui::Text("Diffuse texture");
+		ImGui::NewLine();
+		// display only for now
+		if (diffuse != 0)
 		{
+			ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(diffuse)), { 100.0f,100.0f });
 		}
 	}
 }

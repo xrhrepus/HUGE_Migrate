@@ -14,7 +14,8 @@ namespace H::Graphics
 	struct ShaderEffectContext
 	{
 		virtual void DebugUI() = 0;
-		Camera* camera = nullptr;
+		const Camera* camera = nullptr;
+		TransformData transformData;
 	};
  
 
@@ -75,7 +76,6 @@ namespace H::Graphics
 		{
 			void DebugUI() override;
 
-			TransformData transformData;
 			DirectionalLight directionalLight;
 			Material material;
 			Settings settings;

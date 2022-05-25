@@ -16,7 +16,9 @@ void MyAppState::Initialize()
 
 	mCurrentCam = &mCamera;
 
-	mMesh = MeshBuilder::CreateCube(10.0f, 10.0f, 10.0f, Vector3::Zero());
+	mMesh = MeshBuilder::CreateCube(30.0f, 30.0f, 30.0f, Vector3::Zero());
+	//mMesh = MeshBuilder::CreateShpere(6.0f, 6, Vector3::Zero());
+
 	mMb.Initialize(mMesh);
 	vs.Initialize(OLD_STANDARD_FILE_PATH);
 	ps.Initialize(OLD_STANDARD_FILE_PATH, "PS");
@@ -37,7 +39,14 @@ void MyAppState::Initialize()
 	mtb.Initialize(mt);
 
 	//
-	tMeshRd = std::make_unique<T_MeshRenderer>(mMesh);
+	tMeshRd.SetCamera(*mCurrentCam);
+	tMeshRd.SetMesh(mMesh);
+	tMeshRd.SetLight(tLight);
+	tMeshRd.SetMaterial(standardMat);
+	tMeshRd.SetTransform(tTransform);
+	//
+	standardMat.Init();
+	standardMat.SetDiffuseTexture(tx);
 	//
  }
 
@@ -57,15 +66,16 @@ void MyAppState::RenderScene()
 //
 	Matrix4 vm = mCurrentCam->GetViewMatrix();
 	Matrix4 pm = mCurrentCam->GetPerspectiveMatrix();
-	Matrix4 world = Matrix4::Identity();
+	Matrix4 world = Matrix4::translation(Vector3{ 5.0f,3.0f,1.0f });
 
 	tfd.world = H::Math::Transpose(world);
 	tfd.viewPosition = mCurrentCam->GetPosition();
 	tfd.wvp = H::Math::Transpose(world * vm * pm);
 	tfb.Set(tfd);
 
-	tMeshRd->Render();
-
+	tMeshRd.PreRender();
+	tMeshRd.Render();
+	tMeshRd.PostRender();
 ////
 //	mtb.Set(mt);
 ////
@@ -103,7 +113,7 @@ void MyAppState::Update(float deltatime)
 
 void MyAppState::DebugUI()
 {
-	tMeshRd->DebugUI();
+	tMeshRd.DebugUI();
 
 	ImGui::Begin("he");
 	if (ImGui::CollapsingHeader("Light"))

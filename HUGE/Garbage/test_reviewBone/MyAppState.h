@@ -22,7 +22,10 @@ private:
 
 private:
 	//use t mesh rd
-	std::unique_ptr<T_MeshRenderer> tMeshRd;
+	T_MeshRenderer tMeshRd;
+	T_Light tLight;
+	T_Transform tTransform;
+	Standard_Material standardMat;
 private:
 
 	DirectionalLight mDl;
