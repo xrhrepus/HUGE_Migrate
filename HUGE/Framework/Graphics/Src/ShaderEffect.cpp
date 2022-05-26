@@ -2,6 +2,7 @@
 #include "ShaderEffect.h"
 #include "SamplerManager.h"
 #include "D3DUtil.h"
+#include "DepthStencilManager.h"
 
 namespace 
 {
@@ -268,6 +269,9 @@ void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 
 void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContext& context) const
 {
+	SamplerManager::Get()->GetSampler("PointClamp")->BindPS(0);
+	DepthStencilManager::Get()->GetDepthStencilState("ZTest")->Set();
+
 	const auto& stdContext = static_cast<const SE_Context_Standard&>(context);
 
 	SetValue_TransformBuffer(stdContext.transformData);
