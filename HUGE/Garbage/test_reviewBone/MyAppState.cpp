@@ -16,13 +16,24 @@ void MyAppState::Initialize()
 
 	mCurrentCam = &mCamera;
 
-	mMesh = MeshBuilder::CreateCube(30.0f, 30.0f, 30.0f, Vector3::Zero());
+	//mMesh = MeshBuilder::CreateCube(30.0f, 30.0f, 30.0f, Vector3::Zero());
 	//mMesh = MeshBuilder::CreateShpere(6.0f, 6, Vector3::Zero());
+	//ObjLoader::Load("../../Assets/Models/Tank/tank.obj", 0.05f, mMesh);
+	ObjLoader::Load("../../Assets/Models/TestModel/cat.obj", 100.0f, mMesh);
+	//ObjLoader::Load("../../Assets/Models/TestModel/tree.obj", 100.0f, mMesh);
+	//ObjLoader::Load("../../Assets/Models/TestModel/simpleCube.obj", 100.0f, mMesh);
+
 
 	mMb.Initialize(mMesh);
 	vs.Initialize(OLD_STANDARD_FILE_PATH);
 	ps.Initialize(OLD_STANDARD_FILE_PATH, "PS");
-	tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
+	//tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
+	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/tree_tex.png");
+
+	tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/cat_tex.png");
+	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/Tank/tank_diffuse.jpg");
+	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/simplecube_tex.png");
+
 
 	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
 	mDl.diffuse = 1.0f;
