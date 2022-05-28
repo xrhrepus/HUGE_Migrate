@@ -24,12 +24,18 @@
     <ClCompile Include="T_MeshRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="T_Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyAppState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="T_MeshRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="T_Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

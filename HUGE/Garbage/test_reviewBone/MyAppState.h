@@ -2,6 +2,7 @@
 #include <HUGE\Inc\AppState.h>
 #include <HUGE\Inc\HUGE.h>
 #include "T_MeshRenderer.h"
+#include "T_Scene.h"
 using namespace H;
 using namespace H::Graphics;
  
@@ -19,6 +20,10 @@ private:
 	void _drawGrid();
 	void RenderScene();
 	void PostProcess();
+
+private:
+	// use scene
+	T_Scene mScene;
 
 private:
 	//use t mesh rd

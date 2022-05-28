@@ -88,7 +88,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -131,7 +131,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -149,11 +149,13 @@
   <ItemGroup>
     <ClCompile Include="MyAppState.cpp" />
     <ClCompile Include="T_MeshRenderer.cpp" />
+    <ClCompile Include="T_Scene.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyAppState.h" />
     <ClInclude Include="T_MeshRenderer.h" />
+    <ClInclude Include="T_Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Engine\HUGE\HUGE.vcxproj">

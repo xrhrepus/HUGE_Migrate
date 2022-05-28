@@ -9,6 +9,7 @@ using namespace H::Input;
  
 void MyAppState::Initialize()
 {
+	mScene.Init();
 	//camera
 	mCamera.SetPosition({ -121.0f, 75.0f, 100.0f });
 	//mCurrentCam.SetDirection({ 0.0f,0.0f, 1.0f });
@@ -19,10 +20,10 @@ void MyAppState::Initialize()
 	//mMesh = MeshBuilder::CreateCube(30.0f, 30.0f, 30.0f, Vector3::Zero());
 	//mMesh = MeshBuilder::CreateShpere(6.0f, 6, Vector3::Zero());
 	//ObjLoader::Load("../../Assets/Models/Tank/tank.obj", 0.05f, mMesh);
-	ObjLoader::Load("../../Assets/Models/TestModel/cat.obj", 100.0f, mMesh);
-	//ObjLoader::Load("../../Assets/Models/TestModel/tree.obj", 100.0f, mMesh);
+	//ObjLoader::Load("../../Assets/Models/TestModel/cat.obj", 100.0f, mMesh);
+	//ObjLoader::Load("../../Assets/Models/TestModel/fox.obj", 100.0f, mMesh);
 	//ObjLoader::Load("../../Assets/Models/TestModel/simpleCube.obj", 100.0f, mMesh);
-
+	mMesh = *mScene.GetMesh("cat");
 
 	mMb.Initialize(mMesh);
 	vs.Initialize(OLD_STANDARD_FILE_PATH);
@@ -30,10 +31,12 @@ void MyAppState::Initialize()
 	//tx = TextureManager::Get()->LoadTexture("sponge_bob.png");
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/tree_tex.png");
 
-	tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/cat_tex.png");
+	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/cat_tex.png");
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/Tank/tank_diffuse.jpg");
+	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/fox_red.png");
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/simplecube_tex.png");
-
+	tx = mScene.GetTexture("cat");
+	//tx = mScene.GetTexture("cat");
 
 	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
 	mDl.diffuse = 1.0f;
@@ -93,7 +96,7 @@ void MyAppState::RenderScene()
 //	ltb.Set(mDl);
 ////
 //	vs.Bind();
-//	TextureManager::Get()->GetTexture(tx)->BindPS();
+	TextureManager::Get()->GetTexture(tx)->BindPS();
 //	ps.Bind();
 //
 //	tfb.BindVS(0);
@@ -124,6 +127,7 @@ void MyAppState::Update(float deltatime)
 
 void MyAppState::DebugUI()
 {
+	mScene.DebugUI();
 	tMeshRd.DebugUI();
 
 	ImGui::Begin("he");
