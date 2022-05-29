@@ -38,13 +38,15 @@ public:
 		}
 		return false;
 	}
-	void ForEachItem(std::function<void(const StoragePairKey&, const T&)> func)
+
+	void ForEachItem(std::function<void(const StoragePairKey&, const T&)> func) const
 	{
 		for (auto& [key, value] : mStorage)
 		{
 			func(key, *value); //safe
 		}
 	}
+
 	
 private:
 	decltype(auto) findItem(const StoragePairKey& name) const
@@ -67,9 +69,13 @@ public:
 
 	const Mesh* GetMesh(const SceneMeshMap::StoragePairKey& name) const;
 	const TextureId GetTexture(const SceneMeshMap::StoragePairKey& name) const;
+	void ForEachTexture(std::function<void(const std::string&, const TextureId&)> func) const;
 private:
 	void LoadMesh(const std::string name, const std::filesystem::path& file);
-	void LoadPrimitiveMesh();
+	void LoadDefaultMesh();
+	void LoadTexture(const std::string name, const std::filesystem::path& file);
+	void LoadDefaultTexture();
+
 	// resources
 	SceneCameraMap mCameras;
 	SceneMeshMap mMeshes;

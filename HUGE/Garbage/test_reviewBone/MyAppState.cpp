@@ -23,7 +23,7 @@ void MyAppState::Initialize()
 	//ObjLoader::Load("../../Assets/Models/TestModel/cat.obj", 100.0f, mMesh);
 	//ObjLoader::Load("../../Assets/Models/TestModel/fox.obj", 100.0f, mMesh);
 	//ObjLoader::Load("../../Assets/Models/TestModel/simpleCube.obj", 100.0f, mMesh);
-	mMesh = *mScene.GetMesh("cat");
+	mMesh = *mScene.GetMesh("tank");
 
 	mMb.Initialize(mMesh);
 	vs.Initialize(OLD_STANDARD_FILE_PATH);
@@ -35,7 +35,7 @@ void MyAppState::Initialize()
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/Tank/tank_diffuse.jpg");
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/fox_red.png");
 	//tx = TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/simplecube_tex.png");
-	tx = mScene.GetTexture("cat");
+	tx = mScene.GetTexture("tankdiffuse");
 	//tx = mScene.GetTexture("cat");
 
 	mDl.direction = Vector3{ 0.0f,1.0f,0.0f };
@@ -58,6 +58,7 @@ void MyAppState::Initialize()
 	tMeshRd.SetLight(tLight);
 	tMeshRd.SetMaterial(standardMat);
 	tMeshRd.SetTransform(tTransform);
+	tMeshRd.SetScene(mScene);
 	//
 	standardMat.Init();
 	standardMat.SetDiffuseTexture(tx);
@@ -107,16 +108,9 @@ void MyAppState::Update(float deltatime)
 
 void MyAppState::DebugUI()
 {
+	ImGui::ShowDemoWindow();
 	mScene.DebugUI();
 	tMeshRd.DebugUI();
-
-	ImGui::Begin("he");
-	if (ImGui::CollapsingHeader("Light"))
-	{
-		ImGui::SliderFloat3("dir", mDl.direction.v.data(), 0.0f, 1.0f);
-	}
-	ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(tx)), { 100.0f,100.0f });
-	ImGui::End();
 }
 
 void MyAppState::_drawGrid()

@@ -7,6 +7,10 @@
 // Renderer = mesh + Material
 // Material = shader + shader customized data
 
+class T_Light;
+class T_Transform;
+class T_Scene;
+
 
 // provides a abstract template for Renderer
 class T_Material
@@ -20,11 +24,14 @@ public:
 	virtual void SetCamera(const Camera& cam);
 	virtual void SetLight(const DirectionalLight& light);
 	virtual void DebugUI() = 0;
+	virtual void SetScene(const T_Scene& scene);
 protected:
 	// ref to instance in ShaderEffectManager
 	const ShaderEffect* mShaderEffect;
 	// ShaderEffect creates context. data stored in Material
 	std::unique_ptr<ShaderEffectContext> mShaderEffectContext;
+protected:
+	const T_Scene* mScene;
 };
 
 // 1 shader 1 material.
@@ -40,25 +47,10 @@ public:
 	void DebugUI() override;
 };
 
-
-struct T_Transform
-{
-	Vector3 pos;
-	Vector3 rot;
-	Vector3 scale{ 1.0f,1.0f,1.0f };
-	Quaternion rotationQuaternion{ 0.0f,0.0f,0.0f,1.0f };
-	Matrix4 computeTransform() const;
-	void DebugUI();
-};
-
-struct T_Light
-{
-	DirectionalLight light;
-	void DebugUI();
-};
-
 class T_MeshRenderer
 {
+public:
+	void SetScene(const T_Scene& scene);
 public:
 	void SetCamera(const Camera& cam);
 	void SetMesh(const Mesh& mesh);
@@ -72,6 +64,8 @@ public:
 
 	void DebugUI();
 
+private:
+	const T_Scene* mScene;
 private:
 	MeshBuffer mMeshBuffer;
 	const Mesh* mMesh;

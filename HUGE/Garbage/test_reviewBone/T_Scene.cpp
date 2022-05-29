@@ -2,8 +2,8 @@
 
 void T_Scene::Init()
 {
-	LoadPrimitiveMesh();
-	mTextures.AddItem(std::make_pair("cat", std::make_unique<TextureId>(TextureManager::Get()->LoadTexture("../../Assets/Models/TestModel/cat_tex.png"))));
+	LoadDefaultMesh();
+	LoadDefaultTexture();
 }
 
 void T_Scene::LoadMesh(const std::string name, const std::filesystem::path & file)
@@ -16,13 +16,30 @@ void T_Scene::LoadMesh(const std::string name, const std::filesystem::path & fil
 	mMeshes.AddItem(std::make_pair(name, std::move(m)));
 }
 
-void T_Scene::LoadPrimitiveMesh()
+void T_Scene::LoadDefaultMesh()
 {
 	mMeshes.AddItem(std::make_pair("cube", std::make_unique<Mesh>(MeshBuilder::CreateCube(10.0f, 10.0f, 10.0f, Vector3::Zero()))));
 	mMeshes.AddItem(std::make_pair("sphere", std::make_unique<Mesh>(MeshBuilder::CreateShpere(10.0f, 10, Vector3::Zero()))));
 
 	//
 	LoadMesh("cat", "../../Assets/Models/TestModel/cat.obj");
+	LoadMesh("tank", "../../Assets/Models/Tank/tank.obj");
+}
+
+void T_Scene::LoadTexture(const std::string name, const std::filesystem::path& file)
+{
+	mTextures.AddItem(std::make_pair(name, std::make_unique<TextureId>(TextureManager::Get()->LoadTexture(file))));
+}
+
+void T_Scene::LoadDefaultTexture()
+{
+	LoadTexture("cat", "../../Assets/Models/TestModel/cat_tex.png");
+
+	LoadTexture("tankdiffuse", "../../Assets/Models/Tank/tank_diffuse.jpg");
+	LoadTexture("tankspecular", "../../Assets/Models/Tank/tank_specular.jpg");
+	LoadTexture("tanknormal", "../../Assets/Models/Tank/tank_normal.jpg");
+	LoadTexture("tankgloss", "../../Assets/Models/Tank/tank_gloss.jpg");
+	LoadTexture("tankao", "../../Assets/Models/Tank/tank_ao.jpg");
 }
 
 void T_Scene::DebugUI()
@@ -51,4 +68,9 @@ const TextureId T_Scene::GetTexture(const SceneMeshMap::StoragePairKey & name) c
 	const auto* t = mTextures.GetItem(name);
 
 	return t ? *t : 0;
+}
+
+void T_Scene::ForEachTexture(std::function<void(const std::string&, const TextureId&)> func) const
+{
+	mTextures.ForEachItem(func);
 }

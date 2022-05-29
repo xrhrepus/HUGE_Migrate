@@ -3,6 +3,8 @@
 #include <HUGE\Inc\HUGE.h>
 #include "T_MeshRenderer.h"
 #include "T_Scene.h"
+#include "T_Components.h"
+
 using namespace H;
 using namespace H::Graphics;
  
