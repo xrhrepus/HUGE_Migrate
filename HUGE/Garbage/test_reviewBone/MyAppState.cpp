@@ -90,26 +90,6 @@ void MyAppState::RenderScene()
 	tMeshRd.PreRender();
 	tMeshRd.Render();
 	tMeshRd.PostRender();
-////
-//	mtb.Set(mt);
-////
-//	ltb.Set(mDl);
-////
-//	vs.Bind();
-	TextureManager::Get()->GetTexture(tx)->BindPS();
-//	ps.Bind();
-//
-//	tfb.BindVS(0);
-//	tfb.BindPS(0);
-//
-//	mtb.BindVS(2);
-//	mtb.BindPS(2);
-//
-//	ltb.BindVS(1);
-//	ltb.BindPS(1);
-//
-//	mMb.Render();
-
 }
 
 void MyAppState::Render()

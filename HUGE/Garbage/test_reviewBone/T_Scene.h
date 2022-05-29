@@ -70,6 +70,7 @@ public:
 private:
 	void LoadMesh(const std::string name, const std::filesystem::path& file);
 	void LoadPrimitiveMesh();
+	// resources
 	SceneCameraMap mCameras;
 	SceneMeshMap mMeshes;
 	SceneTextureMap mTextures;

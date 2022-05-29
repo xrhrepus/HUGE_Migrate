@@ -60,8 +60,6 @@ struct T_Light
 class T_MeshRenderer
 {
 public:
-	T_MeshRenderer();
-
 	void SetCamera(const Camera& cam);
 	void SetMesh(const Mesh& mesh);
 	void SetMaterial(T_Material& mat);

@@ -241,30 +241,83 @@ void H::Graphics::ShaderEffect_Standard::UnBind_Other_Buffers() const
 
 void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 {
-	if (ImGui::CollapsingHeader("StandardEffect"))
-	{
-		if (ImGui::TreeNode("Material color"))
+	//if (ImGui::TreeNode("StandardEffect"))
+	//{
+		// imgui attribute
+		static bool disable_mouse_wheel = false;
+		static bool disable_menu = false;
+		ImGuiWindowFlags window_flags = (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0) | (disable_menu ? 0 : ImGuiWindowFlags_MenuBar);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		ImGui::BeginChild("StandardEffect", ImVec2(0, 260), true, window_flags);
+		// imgui attribute
+		if (ImGui::BeginTabBar("StandardEffect##bar", ImGuiTabBarFlags_None))
 		{
-			ImGui::ColorEdit3("Diffuse color", &(material.diffuse.x));
-			ImGui::ColorEdit3("Ambient color", &(material.ambient.x));
-			ImGui::ColorEdit3("Specular color", &(material.specular.x));
-			ImGui::DragFloat("Power", &(material.power),0.1f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Settings"))
-		{
-			ImGui::DragFloat("Brightness", &(settings.brightness),0.1f);
-			ImGui::TreePop();
+			if (ImGui::BeginTabItem("Material color"))
+			{
+				ImGui::ColorEdit3("Diffuse color", &(material.diffuse.x));
+				ImGui::ColorEdit3("Ambient color", &(material.ambient.x));
+				ImGui::ColorEdit3("Specular color", &(material.specular.x));
+				ImGui::DragFloat("Power", &(material.power), 0.1f);
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Settings"))
+			{
+				ImGui::DragFloat("Brightness", &(settings.brightness), 0.1f);
+				ImGui::EndTabItem();
+
+			}
+			if (ImGui::BeginTabItem("Textures"))
+			{
+				static const ImVec2 size = { 50.0f,50.0f };
+				// display only for now
+				if (diffuse != 0)
+				{
+					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(diffuse)), size);
+				}
+				else
+				{
+					ImGui::Button("None", size);
+				}
+				ImGui::SameLine();
+				ImGui::Text("Diffuse");
+				ImGui::Button("Edit##tex");
+				ImGui::Separator();
+
+				// display only for now
+				if (normal != 0)
+				{
+					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(normal)), size);
+				}
+				else
+				{
+					ImGui::Button("None", size);
+				}
+				ImGui::SameLine();
+				ImGui::Text("Normal");
+				ImGui::Button("Edit##tex");
+				ImGui::Separator();
+
+				// display only for now
+				if (specular != 0)
+				{
+					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(specular)), size);
+				}
+				else
+				{
+					ImGui::Button("None", size);
+				}
+				ImGui::SameLine();
+				ImGui::Text("Specular");
+				ImGui::Button("Edit##tex");
+				ImGui::Separator();
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
 		}
 
-		ImGui::Text("Diffuse texture");
-		ImGui::NewLine();
-		// display only for now
-		if (diffuse != 0)
-		{
-			ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(diffuse)), { 100.0f,100.0f });
-		}
-	}
+		ImGui::EndChild();
+		ImGui::PopStyleVar();
 }
 
 void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContext& context) const

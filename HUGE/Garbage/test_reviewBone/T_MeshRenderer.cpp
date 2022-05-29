@@ -55,19 +55,16 @@ void Standard_Material::SetDiffuseTexture(TextureId tid)
 
 void Standard_Material::DebugUI()
 {
-	if (ImGui::CollapsingHeader("Render Material"))
+	if (ImGui::TreeNode("Render Material"))
 	{
 		mShaderEffectContext->DebugUI();
+		ImGui::TreePop();
 	}
 }
 
 #pragma endregion
 
 #pragma region Mesh renderer
-T_MeshRenderer::T_MeshRenderer()
-{
-}
-
 void T_MeshRenderer::SetCamera(const Camera& cam)
 {
 	mCurrentCam = &cam;
@@ -117,11 +114,13 @@ void T_MeshRenderer::PostRender()
 
 void T_MeshRenderer::DebugUI()
 {
-	ImGui::Begin("Mesh Renderer");
-	mLight->DebugUI();
-	mTransform->DebugUI();
-	mMat->DebugUI();
-	ImGui::End();
+	if (ImGui::TreeNode("Mesh Renderer"))
+	{
+		mLight->DebugUI();
+		mTransform->DebugUI();
+		mMat->DebugUI();
+		ImGui::TreePop();
+	}
 }
 
 #pragma endregion
