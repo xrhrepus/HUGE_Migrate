@@ -23,7 +23,7 @@ namespace H::Graphics
 
 		TextureId LoadTexture(std::filesystem::path filename, bool useroot = true);
 		const Texture* GetTexture(TextureId textureid) const;
-
+		void ForEachTextureId(std::function<void(TextureId tid)> func) const;
 	private:
 		std::filesystem::path mRootPath;
 		std::unordered_map<TextureId, std::unique_ptr<Texture>> mInventory;

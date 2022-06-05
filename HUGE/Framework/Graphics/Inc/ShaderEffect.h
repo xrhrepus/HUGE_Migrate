@@ -11,34 +11,39 @@
 namespace H::Graphics
 {
 	class Camera;
-
-	enum ShaderDataTypes : uint8_t
-	{
-		none,
-		vector1, vector2, vector3, vector4,
-		matrix22, matrix33, matrix44,
-		boolean,
-		textureId,
-		COUNT
-	};
 	class ShaderEffectContext
 	{
 	public:
 		using SD_Vec1_Ref = std::pair<std::string, float*>;
+		using SD_Vec4_Ref = std::pair<std::string, Vector4*>;
+		using SD_TextureId_Ref = std::pair<std::string, TextureId*>;
+		using SD_Boolean_Ref = std::pair<std::string, bool*>;
 		virtual void DebugUI() = 0;
 		const Camera* camera = nullptr;
 		TransformData transformData;
 
-		std::vector<SD_Vec1_Ref>& GetVec1Ref();
-		void CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const;
 		std::function<void()> CreateDebugUI() const;
+		void CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const;
+		void CreateVec4DebugUI(const SD_Vec4_Ref& ref) const;
+		void CreateTextureIdDebugUI(const SD_TextureId_Ref& ref) const;
+		void CreateBooleanDebugUI(const SD_Boolean_Ref& ref) const;
 
 	private:
 		friend class ShaderData_Vector1;
+		friend class ShaderData_Vector4;
+		friend class ShaderData_TextureId;
+		friend class ShaderData_Boolean;
 		void _registerFloat(const SD_Vec1_Ref& data);
+		void _registerVec4(const SD_Vec4_Ref& data);
+		void _registerTextureId(const SD_TextureId_Ref& data);
+		void _registerBoolean(const SD_Boolean_Ref& data);
 		std::vector<SD_Vec1_Ref> mFloats;
+		std::vector<SD_Vec4_Ref> mVec4s;
+		std::vector<SD_TextureId_Ref> mTextureIds;
+		std::vector<SD_Boolean_Ref> mBooleans;
 	};
 
+#pragma region ShaderData types
 
 	class ShaderData_Vector1
 	{
@@ -47,7 +52,52 @@ namespace H::Graphics
 		float operator=(float rhs);
 		float data{ 0.0f };
 	};
- 
+	//class ShaderData_Vector2
+	//{
+	//public:
+	//	ShaderData_Vector2(ShaderEffectContext& context, const std::string& name, Vector2 value = 0.0f);
+	//	float operator=(float rhs);
+	//	Vector2 data{ 0.0f };
+	//};
+	//class ShaderData_Vector3
+	//{
+	//public:
+	//	ShaderData_Vector3(ShaderEffectContext& context, const std::string& name, Vector3 value = 0.0f);
+	//	float operator=(float rhs);
+	//	Vector3 data{ 0.0f };
+	//};
+	class ShaderData_Vector4
+	{
+	public:
+		ShaderData_Vector4(ShaderEffectContext& context, const std::string& name, const Vector4& value = 0.0f);
+		Vector4& operator=(const Vector4& rhs);
+		//bool operator==(const Vector4& rhs) const;
+		//bool operator!=(const Vector4& rhs) const;
+		Vector4 data{ 0.0f };
+	};
+	class ShaderData_Boolean
+	{
+	public:
+		ShaderData_Boolean(ShaderEffectContext& context, const std::string& name, bool value = false);
+		bool operator=(bool rhs);
+		bool operator==(bool rhs);
+		bool operator!=(bool rhs);
+		bool data{ false };
+	};
+	class ShaderData_TextureId
+	{
+	public:
+		ShaderData_TextureId(ShaderEffectContext& context, const std::string& name, TextureId value = 0.0f);
+		TextureId operator=(TextureId rhs);
+		bool operator==(TextureId rhs);
+		bool operator!=(TextureId rhs);
+		operator TextureId() const;
+
+		TextureId data{ 0 };
+	};
+
+
+#pragma endregion
 
 	class ShaderEffect
 	{
@@ -84,20 +134,15 @@ namespace H::Graphics
 		//Bind->(Setcontextinfo->render)->unbind
 #pragma region Standard_datatypes
 	public:
-		struct test_sd
-		{
-			ShaderData_Vector1 f0;
-			ShaderData_Vector1 f1;
-		};
 		struct Settings
 		{
-			float specularMapWeight;
-			float bumpMapWeight;
-			float normalMapWeight;
-			float aoMapWeight;
-			float brightness;
-			bool useShadow;
-			float depthBias;
+			ShaderData_Vector1 specularMapWeight;
+			ShaderData_Vector1 bumpMapWeight;
+			ShaderData_Vector1 normalMapWeight;
+			ShaderData_Vector1 aoMapWeight;
+			ShaderData_Vector1 brightness;
+			ShaderData_Boolean useShadow;
+			ShaderData_Vector1 depthBias;
 			float padding;
 		};
 		struct ShadowData
@@ -114,17 +159,23 @@ namespace H::Graphics
 
 			DirectionalLight directionalLight;
 			Material material;
-			Settings settings;
+			Settings settings = {
+				{ *this,"specularMapWeight" },
+				{ *this,"bumpMapWeight" },
+				{ *this,"normalMapWeight" },
+				{ *this,"aoMapWeight" },
+				{ *this,"brightness" },
+				{ *this,"useShadow" },
+				{ *this,"depthBias" }
+			};
 			ShadowData shadow;
 
-			test_sd test_test = { {*this,"a"},{*this,"b"} };
-
-			TextureId diffuse = 0;
-			TextureId specular = 0;
-			TextureId dispalcement = 0;
-			TextureId normal = 0;
-			TextureId ao = 0;
-			TextureId depth = 0;
+			ShaderData_TextureId diffuse = { *this,"diffuse" };
+			ShaderData_TextureId specular = { *this,"specular" };
+			ShaderData_TextureId dispalcement = { *this,"dispalcement" };
+			ShaderData_TextureId normal = { *this,"normal" };
+			ShaderData_TextureId ao = { *this,"ao" };
+			ShaderData_TextureId depth = { *this,"depth" };
 		};
 #pragma endregion
 

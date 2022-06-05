@@ -105,3 +105,11 @@ void TextureManager::StaticInitialize(std::filesystem::path rootpath)
 
 	 return nullptr;
  }
+
+ void H::Graphics::TextureManager::ForEachTextureId(std::function<void(TextureId tid)> func) const
+ {
+	 for (const auto& i : mInventory)
+	 {
+		 func(i.first);
+	 }
+ }

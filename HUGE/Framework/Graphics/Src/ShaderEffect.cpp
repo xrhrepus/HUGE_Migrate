@@ -3,6 +3,7 @@
 #include "SamplerManager.h"
 #include "D3DUtil.h"
 #include "DepthStencilManager.h"
+#include <format>
 
 using namespace H::Graphics;
 namespace 
@@ -245,80 +246,80 @@ void H::Graphics::ShaderEffect_Standard::SE_Context_Standard::DebugUI()
 	//if (ImGui::TreeNode("StandardEffect"))
 	//{
 		// imgui attribute
-		static bool disable_mouse_wheel = false;
-		static bool disable_menu = false;
-		ImGuiWindowFlags window_flags = (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0) | (disable_menu ? 0 : ImGuiWindowFlags_MenuBar);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-		ImGui::BeginChild("StandardEffect", ImVec2(0, 260), true, window_flags);
-		// imgui attribute
-		if (ImGui::BeginTabBar("StandardEffect##bar", ImGuiTabBarFlags_None))
-		{
-			if (ImGui::BeginTabItem("Material color"))
-			{
-				ImGui::ColorEdit3("Diffuse color", &(material.diffuse.x));
-				ImGui::ColorEdit3("Ambient color", &(material.ambient.x));
-				ImGui::ColorEdit3("Specular color", &(material.specular.x));
-				ImGui::DragFloat("Power", &(material.power), 0.1f);
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Settings"))
-			{
-				ImGui::DragFloat("Brightness", &(settings.brightness), 0.1f);
-				ImGui::EndTabItem();
+		//static bool disable_mouse_wheel = false;
+		//static bool disable_menu = false;
+		//ImGuiWindowFlags window_flags = (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0) | (disable_menu ? 0 : ImGuiWindowFlags_MenuBar);
+		//ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		//ImGui::BeginChild("StandardEffect", ImVec2(0, 260), true, window_flags);
+		//// imgui attribute
+		//if (ImGui::BeginTabBar("StandardEffect##bar", ImGuiTabBarFlags_None))
+		//{
+		//	if (ImGui::BeginTabItem("Material color"))
+		//	{
+		//		ImGui::ColorEdit3("Diffuse color", &(material.diffuse.x));
+		//		ImGui::ColorEdit3("Ambient color", &(material.ambient.x));
+		//		ImGui::ColorEdit3("Specular color", &(material.specular.x));
+		//		ImGui::DragFloat("Power", &(material.power), 0.1f);
+		//		ImGui::EndTabItem();
+		//	}
+		//	if (ImGui::BeginTabItem("Settings"))
+		//	{
+		//		ImGui::DragFloat("Brightness", &(settings.brightness), 0.1f);
+		//		ImGui::EndTabItem();
 
-			}
-			if (ImGui::BeginTabItem("Textures"))
-			{
-				static const ImVec2 size = { 50.0f,50.0f };
-				// display only for now
-				if (diffuse != 0)
-				{
-					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(diffuse)), size);
-				}
-				else
-				{
-					ImGui::Button("None", size);
-				}
-				ImGui::SameLine();
-				ImGui::Text("Diffuse");
-				ImGui::Button("Edit##tex");
-				ImGui::Separator();
+		//	}
+		//	if (ImGui::BeginTabItem("Textures"))
+		//	{
+		//		static const ImVec2 size = { 50.0f,50.0f };
+		//		// display only for now
+		//		if (diffuse != static_cast<TextureId>( 0 ))
+		//		{
+		//			ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(diffuse)), size);
+		//		}
+		//		else
+		//		{
+		//			ImGui::Button("None", size);
+		//		}
+		//		ImGui::SameLine();
+		//		ImGui::Text("Diffuse");
+		//		ImGui::Button("Edit##tex");
+		//		ImGui::Separator();
 
-				// display only for now
-				if (normal != 0)
-				{
-					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(normal)), size);
-				}
-				else
-				{
-					ImGui::Button("None", size);
-				}
-				ImGui::SameLine();
-				ImGui::Text("Normal");
-				ImGui::Button("Edit##tex");
-				ImGui::Separator();
+		//		// display only for now
+		//		if (normal != static_cast<TextureId>(0))
+		//		{
+		//			ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(normal)), size);
+		//		}
+		//		else
+		//		{
+		//			ImGui::Button("None", size);
+		//		}
+		//		ImGui::SameLine();
+		//		ImGui::Text("Normal");
+		//		ImGui::Button("Edit##tex");
+		//		ImGui::Separator();
 
-				// display only for now
-				if (specular != 0)
-				{
-					ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(specular)), size);
-				}
-				else
-				{
-					ImGui::Button("None", size);
-				}
-				ImGui::SameLine();
-				ImGui::Text("Specular");
-				ImGui::Button("Edit##tex");
-				ImGui::Separator();
+		//		// display only for now
+		//		if (specular != static_cast<TextureId>(0))
+		//		{
+		//			ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(specular)), size);
+		//		}
+		//		else
+		//		{
+		//			ImGui::Button("None", size);
+		//		}
+		//		ImGui::SameLine();
+		//		ImGui::Text("Specular");
+		//		ImGui::Button("Edit##tex");
+		//		ImGui::Separator();
 
-				ImGui::EndTabItem();
-			}
-			ImGui::EndTabBar();
-		}
+		//		ImGui::EndTabItem();
+		//	}
+		//	ImGui::EndTabBar();
+		//}
 
-		ImGui::EndChild();
-		ImGui::PopStyleVar();
+		//ImGui::EndChild();
+		//ImGui::PopStyleVar();
 }
 
 void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContext& context) const
@@ -737,31 +738,185 @@ float H::Graphics::ShaderData_Vector1::operator=(float rhs)
 	return data;
 }
 
-std::vector<ShaderEffectContext::SD_Vec1_Ref>& ShaderEffectContext::GetVec1Ref()
-{
-	return mFloats;
-}
-
 void H::Graphics::ShaderEffectContext::CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const
 {
 	ImGui::DragFloat(vec1Ref.first.c_str(), vec1Ref.second, 0.1f);
 }
 
+void H::Graphics::ShaderEffectContext::CreateVec4DebugUI(const SD_Vec4_Ref& ref) const
+{
+	ImGui::ColorPicker4(ref.first.c_str(), &ref.second->x);
+}
+
+ShaderData_TextureId::ShaderData_TextureId(ShaderEffectContext& context, const std::string& name, TextureId value)
+	: data(value)
+{
+	context._registerTextureId({ name, &data });
+}
+TextureId ShaderData_TextureId::operator=(TextureId rhs)
+{
+	data = rhs;
+	return data;
+}
+
+bool H::Graphics::ShaderData_TextureId::operator==(TextureId rhs)
+{
+	return data == rhs;
+}
+
+bool H::Graphics::ShaderData_TextureId::operator!=(TextureId rhs)
+{
+	return data != rhs;
+}
+
+H::Graphics::ShaderData_TextureId::operator TextureId() const
+{
+	return data;
+}
+
+
+void H::Graphics::ShaderEffectContext::CreateTextureIdDebugUI(const SD_TextureId_Ref& ref) const
+{
+	static const ImVec2 size = { 50.0f,50.0f };
+
+	// current
+	if (*ref.second != 0)
+	{
+		ImGui::Image(GetShaderResourceView(*TextureManager::Get()->GetTexture(*ref.second)), size);
+	}
+	else
+	{
+		ImGui::Button("None", size);
+	}
+
+	ImGui::SameLine();
+	const char* name = ref.first.c_str();
+	ImGui::Text(name);
+
+	// edit
+	ImGui::PushID(name);
+	if (ImGui::Button("Edit"))
+	{
+		ImGui::OpenPopup("popupTexEdit");
+	}
+
+	if (ImGui::BeginPopup("popupTexEdit"))
+	{
+		const int itemInSameRow = 5;
+		int count = 0;
+		TextureManager::Get()->ForEachTextureId([&ref,&count, itemInSameRow](const TextureId& tid)
+			{
+				if (ImGui::ImageButton(GetShaderResourceView(*TextureManager::Get()->GetTexture(tid)), size))
+				{
+					*ref.second = tid;
+				}
+				if (++count % itemInSameRow + 1 < itemInSameRow)
+				{
+					ImGui::SameLine();
+				}
+			});
+		ImGui::EndPopup();
+	}
+	ImGui::PopID();
+}
+
+void H::Graphics::ShaderEffectContext::CreateBooleanDebugUI(const SD_Boolean_Ref& ref) const
+{
+	ImGui::Checkbox(ref.first.c_str(), ref.second);
+}
+
 std::function<void()> H::Graphics::ShaderEffectContext::CreateDebugUI() const
 {
 	return [this]() {
-		if (ImGui::TreeNode("test"))
+		ImGui::PushID("HUGE Standard");
+		if (ImGui::TreeNode("Settings"))
 		{
 			for (const auto& v1 : this->mFloats)
 			{
 				CreateVec1DebugUI(v1);
 			}
+			for (const auto& v4 : this->mVec4s)
+			{
+				CreateVec4DebugUI(v4);
+			}
+			for (const auto& b : this->mBooleans)
+			{
+				CreateBooleanDebugUI(b);
+			}
+
+			if (ImGui::TreeNode("Textures"))
+			{
+				for (const auto& tex : this->mTextureIds)
+				{
+					CreateTextureIdDebugUI(tex);
+				}
+				ImGui::TreePop();
+			}
 			ImGui::TreePop();
 		}
+		ImGui::PopID();
 	};
 }
 
 void ShaderEffectContext::_registerFloat(const SD_Vec1_Ref& data)
 {
 	mFloats.emplace_back(data);
+}
+void ShaderEffectContext::_registerVec4(const SD_Vec4_Ref& data)
+{
+	mVec4s.emplace_back(data);
+}
+void ShaderEffectContext::_registerTextureId(const SD_TextureId_Ref& data) 
+{
+	mTextureIds.emplace_back(data);
+}
+
+void H::Graphics::ShaderEffectContext::_registerBoolean(const SD_Boolean_Ref& data)
+{
+	mBooleans.emplace_back(data);
+}
+
+H::Graphics::ShaderData_Vector4::ShaderData_Vector4(ShaderEffectContext& context, const std::string& name, const Vector4& value)
+	:data(value)
+{
+	context._registerVec4({ name, &data });
+
+}
+
+Vector4& H::Graphics::ShaderData_Vector4::operator=(const Vector4& rhs)
+{
+	data = rhs;
+	return data;
+}
+
+//bool H::Graphics::ShaderData_Vector4::operator==(const Vector4& rhs) const
+//{
+//	return data == rhs;
+//}
+//
+//bool H::Graphics::ShaderData_Vector4::operator!=(const Vector4& rhs) const
+//{
+//	return false;
+//}
+
+H::Graphics::ShaderData_Boolean::ShaderData_Boolean(ShaderEffectContext& context, const std::string& name, bool value)
+	:data(value)
+{
+	context._registerBoolean({ name, &data });
+}
+
+bool H::Graphics::ShaderData_Boolean::operator=(bool rhs)
+{
+	data = rhs;
+	return data;
+}
+
+bool H::Graphics::ShaderData_Boolean::operator==(bool rhs)
+{
+	return data == rhs;
+}
+
+bool H::Graphics::ShaderData_Boolean::operator!=(bool rhs)
+{
+	return data != rhs;
 }
