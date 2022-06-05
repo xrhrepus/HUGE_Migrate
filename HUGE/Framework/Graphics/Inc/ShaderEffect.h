@@ -11,11 +11,41 @@
 namespace H::Graphics
 {
 	class Camera;
-	struct ShaderEffectContext
+
+	enum ShaderDataTypes : uint8_t
 	{
+		none,
+		vector1, vector2, vector3, vector4,
+		matrix22, matrix33, matrix44,
+		boolean,
+		textureId,
+		COUNT
+	};
+	class ShaderEffectContext
+	{
+	public:
+		using SD_Vec1_Ref = std::pair<std::string, float*>;
 		virtual void DebugUI() = 0;
 		const Camera* camera = nullptr;
 		TransformData transformData;
+
+		std::vector<SD_Vec1_Ref>& GetVec1Ref();
+		void CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const;
+		std::function<void()> CreateDebugUI() const;
+
+	private:
+		friend class ShaderData_Vector1;
+		void _registerFloat(const SD_Vec1_Ref& data);
+		std::vector<SD_Vec1_Ref> mFloats;
+	};
+
+
+	class ShaderData_Vector1
+	{
+	public:
+		ShaderData_Vector1(ShaderEffectContext& context, const std::string& name, float value = 0.0f);
+		float operator=(float rhs);
+		float data{ 0.0f };
 	};
  
 
@@ -54,6 +84,11 @@ namespace H::Graphics
 		//Bind->(Setcontextinfo->render)->unbind
 #pragma region Standard_datatypes
 	public:
+		struct test_sd
+		{
+			ShaderData_Vector1 f0;
+			ShaderData_Vector1 f1;
+		};
 		struct Settings
 		{
 			float specularMapWeight;
@@ -72,14 +107,17 @@ namespace H::Graphics
 		using SettingsBuffer = H::Graphics::TypedConstantBuffer<Settings>;
 		using ShadowDataBuffer = H::Graphics::TypedConstantBuffer<ShadowData>;
 
-		struct SE_Context_Standard : public ShaderEffectContext
+		class SE_Context_Standard : public ShaderEffectContext
 		{
+		public:
 			void DebugUI() override;
 
 			DirectionalLight directionalLight;
 			Material material;
 			Settings settings;
 			ShadowData shadow;
+
+			test_sd test_test = { {*this,"a"},{*this,"b"} };
 
 			TextureId diffuse = 0;
 			TextureId specular = 0;

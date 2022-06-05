@@ -28,6 +28,10 @@ void T_Material::SetScene(const T_Scene& scene)
 {
 	mScene = &scene;
 }
+void T_Material::SetShaderContextDebugUIFunc(std::function<void()>&& func)
+{
+	debugUICallBack = func;
+}
 #pragma endregion
 
 #pragma region Render mat
@@ -36,6 +40,7 @@ void Standard_Material::Init()
 {
 	mShaderEffect = (&ShaderEffectManager::Get()->GetEffect("Standard"));
 	mShaderEffectContext = mShaderEffect->CreateShaderEffectContext();
+	SetShaderContextDebugUIFunc(mShaderEffectContext->CreateDebugUI());
 }
 
 void Standard_Material::SetTransform(const TransformData& data)
@@ -61,6 +66,13 @@ void Standard_Material::SetDiffuseTexture(TextureId tid)
 void Standard_Material::DebugUI()
 {
 	ShaderEffect_Standard::SE_Context_Standard& ctx = static_cast<ShaderEffect_Standard::SE_Context_Standard&>(*mShaderEffectContext);
+
+	if (ImGui::TreeNode("testsd"))
+	{
+		debugUICallBack();
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNode("Render Material"))
 	{
 		//copy from context debugui to get resource from Tscene

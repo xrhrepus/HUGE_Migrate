@@ -4,6 +4,7 @@
 #include "D3DUtil.h"
 #include "DepthStencilManager.h"
 
+using namespace H::Graphics;
 namespace 
 {
 	void ConstantBuffer_UnBindVS(uint32_t slot) 
@@ -723,3 +724,44 @@ void H::Graphics::ShaderEffect_Standard::SetContextInfo(const ShaderEffectContex
 //
 //}
 // #pragma endregion
+
+ShaderData_Vector1::ShaderData_Vector1(ShaderEffectContext& context, const std::string& name, float value)
+	: data(value)
+{
+	context._registerFloat({ name, &data });
+}
+
+float H::Graphics::ShaderData_Vector1::operator=(float rhs)
+{
+	data = rhs;
+	return data;
+}
+
+std::vector<ShaderEffectContext::SD_Vec1_Ref>& ShaderEffectContext::GetVec1Ref()
+{
+	return mFloats;
+}
+
+void H::Graphics::ShaderEffectContext::CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const
+{
+	ImGui::DragFloat(vec1Ref.first.c_str(), vec1Ref.second, 0.1f);
+}
+
+std::function<void()> H::Graphics::ShaderEffectContext::CreateDebugUI() const
+{
+	return [this]() {
+		if (ImGui::TreeNode("test"))
+		{
+			for (const auto& v1 : this->mFloats)
+			{
+				CreateVec1DebugUI(v1);
+			}
+			ImGui::TreePop();
+		}
+	};
+}
+
+void ShaderEffectContext::_registerFloat(const SD_Vec1_Ref& data)
+{
+	mFloats.emplace_back(data);
+}

@@ -25,11 +25,14 @@ public:
 	virtual void SetLight(const DirectionalLight& light);
 	virtual void DebugUI() = 0;
 	virtual void SetScene(const T_Scene& scene);
+	void SetShaderContextDebugUIFunc(std::function<void()>&& func);
 protected:
 	// ref to instance in ShaderEffectManager
 	const ShaderEffect* mShaderEffect;
 	// ShaderEffect creates context. data stored in Material
 	std::unique_ptr<ShaderEffectContext> mShaderEffectContext;
+	// debugui callback created by context
+	std::function<void()> debugUICallBack;
 protected:
 	const T_Scene* mScene;
 };
