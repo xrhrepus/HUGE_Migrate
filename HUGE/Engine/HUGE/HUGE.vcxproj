@@ -158,6 +158,7 @@
     <ClInclude Include="Inc\HUGE.h" />
     <ClInclude Include="Inc\Editor.h" />
     <ClInclude Include="Inc\H_MeshRenderer.h" />
+    <ClInclude Include="Inc\MeshService.h" />
     <ClInclude Include="Inc\MetaRegistration.h" />
     <ClInclude Include="Inc\PerlinNoise.h" />
     <ClInclude Include="Inc\Quadtree.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Src\HUGE.cpp" />
     <ClCompile Include="Src\Editor.cpp" />
     <ClCompile Include="Src\H_MeshRenderer.cpp" />
+    <ClCompile Include="Src\MeshService.cpp" />
     <ClCompile Include="Src\MetaRegistration.cpp" />
     <ClCompile Include="Src\PerlinNoise.cpp" />
     <ClCompile Include="Src\Precompiled.cpp">

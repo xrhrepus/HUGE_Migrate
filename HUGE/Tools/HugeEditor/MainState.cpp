@@ -18,6 +18,7 @@ void MainState::Initialize()
 	mCamera->SetDirection(H::Math::Normalize({ 0.0f,-30.0f,-50.0f }));
 
 	mWorld.AddService<H::SkydomeService>();
+	mWorld.AddService<H::MeshService>();
 	mWorld.Initialize(66666);
 
 	mWorld.Create(L"../../Assets/Templates/test.json", "main123qwer");

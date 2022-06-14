@@ -9,6 +9,7 @@
 
 #include "CameraService.h"
 #include "TerrainService.h"
+#include "MeshService.h"
 
 
 void H::StaticMetaRegistration()
@@ -21,5 +22,6 @@ void H::StaticMetaRegistration()
 
 	META_REGISTRY(H::CameraService);
 	META_REGISTRY(H::TerrainService);
+	META_REGISTRY(H::MeshService);
 
 }

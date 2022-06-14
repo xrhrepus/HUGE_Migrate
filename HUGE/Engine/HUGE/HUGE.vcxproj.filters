@@ -28,6 +28,9 @@
     <Filter Include="Src\App">
       <UniqueIdentifier>{2fc0bbac-091e-43bc-9026-a811628a7712}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EditorService">
+      <UniqueIdentifier>{0a2b020b-ecbf-46f1-a35d-9f0b2246e95a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Precompiled.h">
@@ -74,10 +77,19 @@
     <ClInclude Include="Inc\Quadtree.h" />
     <ClInclude Include="Inc\PerlinNoise.h" />
     <ClInclude Include="Inc\Terrain.h" />
-    <ClInclude Include="Inc\TerrainService.h" />
-    <ClInclude Include="Inc\CameraService.h" />
-    <ClInclude Include="Inc\SkydomeService.h" />
     <ClInclude Include="Inc\Skydome.h" />
+    <ClInclude Include="Inc\CameraService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TerrainService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SkydomeService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MeshService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Precompiled.cpp">
@@ -118,9 +130,18 @@
     <ClCompile Include="Src\Quadtree.cpp" />
     <ClCompile Include="Src\PerlinNoise.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
-    <ClCompile Include="Src\TerrainService.cpp" />
-    <ClCompile Include="Src\CameraService.cpp" />
-    <ClCompile Include="Src\SkydomeService.cpp" />
     <ClCompile Include="Src\Skydome.cpp" />
+    <ClCompile Include="Src\CameraService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TerrainService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkydomeService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MeshService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
