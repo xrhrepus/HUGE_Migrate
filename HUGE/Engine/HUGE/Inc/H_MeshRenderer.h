@@ -1,6 +1,7 @@
-#ifndef HUGE_COLLIDERCOMPONENT_H
-#define HUGE_COLLIDERCOMPONENT_H
+#ifndef HUGE_HMESHRENDERERCOMPONENT_H
+#define HUGE_HMESHRENDERERCOMPONENT_H
 #include "Component.h"
+#include "MeshService.h"
 
 namespace H
 {
@@ -15,20 +16,20 @@ namespace H
 		void Render() override;
 		void DebugUI() override;
 
-		void SetMesh(const Mesh& mesh);
+		void SetMesh(const H::MeshService::MeshEntry& mesh);
 		void SetContext(const ShaderEffect_Standard::SE_Context_Standard& context);
 
 
 	private:
 		const ShaderEffect_Standard* mStandardShaderEffect;
 		ShaderEffect_Standard::SE_Context_Standard mStandardContext;
-		Mesh mMesh;
+		const H::MeshService::MeshEntry* mMesh;
 		MeshBuffer mMeshBuffer;
 
 	};
 }
 
-#endif // !HUGE_COLLIDERCOMPONENT_H
+#endif // !HUGE_HMESHRENDERERCOMPONENT_H
 
 
  

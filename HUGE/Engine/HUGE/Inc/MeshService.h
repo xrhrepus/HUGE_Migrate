@@ -5,18 +5,20 @@ namespace H
 {
 	class MeshService : public Service
 	{
-	private:
+	public:
+
 		struct MeshEntry
 		{
 			H::Graphics::Mesh mesh;
 			std::string name;
 		};
 
-	public:
 		META_CLASS_DECLARE;
 		void Initialize() override;
 		void DebugUI() override;
 		void AddMesh(MeshEntry&& entry);
+		const MeshEntry& GetMeshEntry(const std::string& name) const;
+		void ForEachMesh(std::function<void(const H::MeshService::MeshEntry&)> func) const;
 
 	private:
 		std::vector<MeshEntry> mMeshList;

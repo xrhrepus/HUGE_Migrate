@@ -6,6 +6,7 @@
 
 #include "ColliderComponent.h"
 #include "TransformComponent.h"
+#include "H_MeshRenderer.h"
 
 #include "CameraService.h"
 #include "TerrainService.h"
@@ -19,6 +20,7 @@ void H::StaticMetaRegistration()
 
 	META_REGISTRY(H::ColliderComponent);
 	META_REGISTRY(H::TransformComponent);
+	META_REGISTRY(H::H_MeshRenderer);
 
 	META_REGISTRY(H::CameraService);
 	META_REGISTRY(H::TerrainService);

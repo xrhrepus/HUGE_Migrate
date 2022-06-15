@@ -15,7 +15,7 @@ void H::MeshService::Initialize()
 
 void H::MeshService::DebugUI()
 {
-	if (ImGui::CollapsingHeader("MeshService"))
+	if (ImGui::TreeNode("MeshService"))
 	{
 		for (const auto& e : mMeshList)
 		{
@@ -27,4 +27,24 @@ void H::MeshService::DebugUI()
 void H::MeshService::AddMesh(MeshEntry&& entry)
 {
 	mMeshList.push_back(std::move(entry));
+}
+
+const H::MeshService::MeshEntry& H::MeshService::GetMeshEntry(const std::string& name) const
+{
+	for (const auto& e : mMeshList)
+	{
+		if (e.name == name)
+		{
+			return e;
+		}
+	}
+}
+
+void H::MeshService::ForEachMesh(std::function<void(const H::MeshService::MeshEntry&)> func) const
+{
+	for (const auto& e : mMeshList)
+	{
+		func(e);
+	}
+
 }
