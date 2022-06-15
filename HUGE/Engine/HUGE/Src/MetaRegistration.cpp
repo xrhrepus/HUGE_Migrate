@@ -6,7 +6,7 @@
 
 #include "ColliderComponent.h"
 #include "TransformComponent.h"
-#include "H_MeshRenderer.h"
+#include "MeshRenderer.h"
 
 #include "CameraService.h"
 #include "TerrainService.h"

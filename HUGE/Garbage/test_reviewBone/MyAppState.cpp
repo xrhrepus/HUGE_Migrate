@@ -1,6 +1,6 @@
 #include "MyAppState.h"
 #include "HUGE/Inc/TransformComponent.h"
-#include "HUGE/Inc/H_MeshRenderer.h"
+#include "HUGE/Inc/MeshRenderer.h"
 float fps;
 using namespace H::Core;
 using namespace H::Graphics;

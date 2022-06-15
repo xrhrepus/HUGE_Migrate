@@ -1,5 +1,5 @@
 #include "Precompiled.h"
-#include "H_MeshRenderer.h"
+#include "MeshRenderer.h"
 #include "GameObject.h"
 #include "World.h"
 
@@ -15,7 +15,7 @@ void H::MeshRenderer::Initialize()
 {
 	mStandardShaderEffect =
 		static_cast<const ShaderEffect_Standard*>(&ShaderEffectManager::Get()->GetEffect("Standard"));
-	mMesh = &(GetOwner().GetWorld().GetService<H::MeshService>()->GetMeshEntry("cube"));
+	SetMesh(GetOwner().GetWorld().GetService<H::MeshService>()->GetMeshEntry("cube"));
 }
  
 void H::MeshRenderer::Terminate()
@@ -39,23 +39,36 @@ void H::MeshRenderer::DebugUI()
 {
 	if (ImGui::TreeNode("MeshRenderer"))
 	{
-		ImGui::PushID("hms");
-		ImGui::Text("current mesh");
+		ImGui::PushID("hms##");
+		ImGui::Text("Mesh: "); 
+		ImGui::SameLine();
 		ImGui::Text(mMesh->name.c_str());
-
-		if (ImGui::BeginChild("setmesh"))
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("select",ImGuiDir{ ImGuiDir_::ImGuiDir_Right}))
 		{
-			GetOwner().GetWorld().GetService<H::MeshService>()->ForEachMesh(
-				[this](const H::MeshService::MeshEntry& meshEntry)
-				{
-					if (ImGui::Button(meshEntry.name.c_str()))
-					{
-						SetMesh(meshEntry);
-					}
-				});
-			ImGui::EndChild();
+			ImGui::OpenPopup("MeshSelect");
 		}
+		ImGui::Separator();
+		if (ImGui::BeginPopup("MeshSelect"))
+		{
+			if (ImGui::BeginChild("setmesh", ImVec2{ 50.0f,200.0f }, true))
+			{
+				GetOwner().GetWorld().GetService<H::MeshService>()->ForEachMesh(
+					[this](const H::MeshService::MeshEntry& meshEntry)
+					{
+						if (ImGui::Button(meshEntry.name.c_str()))
+						{
+							SetMesh(meshEntry);
+						}
+					});
+				ImGui::EndChild();
+			}
+			ImGui::EndPopup();
+		}
+
+		
 		ImGui::PopID();
+		ImGui::TreePop();
 	}
 
 }

@@ -157,7 +157,7 @@
     <ClInclude Include="Inc\GameObjectFactory.h" />
     <ClInclude Include="Inc\HUGE.h" />
     <ClInclude Include="Inc\Editor.h" />
-    <ClInclude Include="Inc\H_MeshRenderer.h" />
+    <ClInclude Include="Inc\MeshRenderer.h" />
     <ClInclude Include="Inc\MeshService.h" />
     <ClInclude Include="Inc\MetaRegistration.h" />
     <ClInclude Include="Inc\PerlinNoise.h" />
@@ -180,7 +180,7 @@
     <ClCompile Include="Src\GameObjectFactory.cpp" />
     <ClCompile Include="Src\HUGE.cpp" />
     <ClCompile Include="Src\Editor.cpp" />
-    <ClCompile Include="Src\H_MeshRenderer.cpp" />
+    <ClCompile Include="Src\MeshRenderer.cpp" />
     <ClCompile Include="Src\MeshService.cpp" />
     <ClCompile Include="Src\MetaRegistration.cpp" />
     <ClCompile Include="Src\PerlinNoise.cpp" />

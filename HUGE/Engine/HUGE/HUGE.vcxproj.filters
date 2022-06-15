@@ -72,7 +72,7 @@
     <ClInclude Include="Inc\AppState.h">
       <Filter>Src\App</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\H_MeshRenderer.h" />
+    <ClInclude Include="Inc\MeshRenderer.h" />
     <ClInclude Include="Inc\Editor.h" />
     <ClInclude Include="Inc\Quadtree.h" />
     <ClInclude Include="Inc\PerlinNoise.h" />
@@ -125,7 +125,7 @@
     <ClCompile Include="Src\HUGE.cpp">
       <Filter>Src\App</Filter>
     </ClCompile>
-    <ClCompile Include="Src\H_MeshRenderer.cpp" />
+    <ClCompile Include="Src\MeshRenderer.cpp" />
     <ClCompile Include="Src\Editor.cpp" />
     <ClCompile Include="Src\Quadtree.cpp" />
     <ClCompile Include="Src\PerlinNoise.cpp" />

@@ -21,6 +21,7 @@ void H::MeshService::DebugUI()
 		{
 			ImGui::Button(e.name.c_str());
 		}
+		ImGui::TreePop();
 	}
 }
 
