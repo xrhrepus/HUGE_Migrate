@@ -6,7 +6,7 @@
 namespace H
 {
  
-	class H_MeshRenderer : public Component
+	class MeshRenderer : public Component
 	{
 	public:
 		META_CLASS_DECLARE;

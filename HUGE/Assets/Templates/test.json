@@ -27,7 +27,7 @@
 					"z": 33
 				}
 			},
-			"H_MeshRenderer" : {}
+			"MeshRenderer" : {}
 		}
   }
 }

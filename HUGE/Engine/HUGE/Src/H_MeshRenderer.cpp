@@ -6,28 +6,28 @@
 using namespace H;
 using namespace H::Graphics;
 
-META_DERIVED_BEGIN(H_MeshRenderer, Component)
+META_DERIVED_BEGIN(MeshRenderer, Component)
 META_FIELD_BEGIN
 META_FIELD_END
 META_CLASS_END
 
-void H::H_MeshRenderer::Initialize()
+void H::MeshRenderer::Initialize()
 {
 	mStandardShaderEffect =
 		static_cast<const ShaderEffect_Standard*>(&ShaderEffectManager::Get()->GetEffect("Standard"));
 	mMesh = &(GetOwner().GetWorld().GetService<H::MeshService>()->GetMeshEntry("cube"));
 }
  
-void H::H_MeshRenderer::Terminate()
+void H::MeshRenderer::Terminate()
 {
 	mMeshBuffer.Terminate();
 }
 
-void H::H_MeshRenderer::Update(float deltatime)
+void H::MeshRenderer::Update(float deltatime)
 {
 }
 
-void H::H_MeshRenderer::Render()
+void H::MeshRenderer::Render()
 {
 	mStandardShaderEffect->Bind();
 	mStandardShaderEffect->SetContextInfo(mStandardContext);
@@ -35,9 +35,9 @@ void H::H_MeshRenderer::Render()
 	mStandardShaderEffect->UnBind();
 }
 
-void H::H_MeshRenderer::DebugUI()
+void H::MeshRenderer::DebugUI()
 {
-	if (ImGui::CollapsingHeader("H_MeshRenderer"))
+	if (ImGui::TreeNode("MeshRenderer"))
 	{
 		ImGui::PushID("hms");
 		ImGui::Text("current mesh");
@@ -60,14 +60,14 @@ void H::H_MeshRenderer::DebugUI()
 
 }
 
-void H::H_MeshRenderer::SetMesh(const H::MeshService::MeshEntry& mesh)
+void H::MeshRenderer::SetMesh(const H::MeshService::MeshEntry& mesh)
 {
 	mMesh = &mesh;
 	mMeshBuffer.Terminate();
 	mMeshBuffer.Initialize(mMesh->mesh, false);
 }
 
-void H::H_MeshRenderer::SetContext(const ShaderEffect_Standard::SE_Context_Standard & context)
+void H::MeshRenderer::SetContext(const ShaderEffect_Standard::SE_Context_Standard & context)
 {
 	mStandardContext = context;
 }

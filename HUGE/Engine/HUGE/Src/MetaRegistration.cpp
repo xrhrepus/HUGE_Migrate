@@ -20,7 +20,7 @@ void H::StaticMetaRegistration()
 
 	META_REGISTRY(H::ColliderComponent);
 	META_REGISTRY(H::TransformComponent);
-	META_REGISTRY(H::H_MeshRenderer);
+	META_REGISTRY(H::MeshRenderer);
 
 	META_REGISTRY(H::CameraService);
 	META_REGISTRY(H::TerrainService);
