@@ -8,6 +8,13 @@ META_CLASS_END
 
 void H::CameraService::DebugUI()
 {
+	for (size_t i = 0; i < mCameraList.size(); ++i)
+	{
+		if (ImGui::Button(mCameraList[i].name.c_str()))
+		{
+			mActiveCameraIndex = i;
+		}
+	}
 	mCameraList[mActiveCameraIndex].camera.DebugUI();
 }
 

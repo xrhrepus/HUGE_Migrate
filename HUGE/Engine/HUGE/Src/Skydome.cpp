@@ -9,7 +9,7 @@ void H::Skydome::Initialize(float radius, int slice)
 	mPS.Initialize(TEXTURING_FILE_PATH, "PS");
 	mCB.Initialize();
 
-	mDiffuseId = TextureManager::Get()->LoadTexture("sunset_front.tif");
+	mDiffuseId = TextureManager::Get()->LoadTexture("rooitou_park.jpg");
 
 }
 

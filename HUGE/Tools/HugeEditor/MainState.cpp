@@ -12,11 +12,13 @@ void MainState::Initialize()
 	mWorld.LoadLevel(L"../../Assets/Levels/test_level.json");
 
 	auto camSvcs = mWorld.GetService<H::CameraService>();
+	mCamera = camSvcs->AddCamera("EditorCam2");
 	mCamera = camSvcs->AddCamera("EditorCam");
 	camSvcs->SetActiveCamera("EditorCam");
 	mCamera->SetPosition({ 0.0f,30.0f,50.0f });
 	mCamera->SetDirection(H::Math::Normalize({ 0.0f,-30.0f,-50.0f }));
 
+	
 	mWorld.AddService<H::SkydomeService>();
 	mWorld.AddService<H::MeshService>();
 	mWorld.Initialize(66666);
