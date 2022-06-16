@@ -21,6 +21,7 @@ void MainState::Initialize()
 	
 	mWorld.AddService<H::SkydomeService>();
 	mWorld.AddService<H::MeshService>();
+	mWorld.AddService<H::RenderMaterialService>();
 	mWorld.Initialize(66666);
 
 	mWorld.Create(L"../../Assets/Templates/test.json", "main123qwer");

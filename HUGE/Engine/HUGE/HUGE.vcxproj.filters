@@ -90,6 +90,9 @@
     <ClInclude Include="Inc\MeshService.h">
       <Filter>EditorService</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RenderMaterialService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Precompiled.cpp">
@@ -141,6 +144,9 @@
       <Filter>EditorService</Filter>
     </ClCompile>
     <ClCompile Include="Src\MeshService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RenderMaterialService.cpp">
       <Filter>EditorService</Filter>
     </ClCompile>
   </ItemGroup>

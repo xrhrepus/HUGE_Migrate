@@ -36,6 +36,7 @@
 #include "TerrainService.h"
 #include "SkydomeService.h"
 #include "MeshService.h"
+#include "RenderMaterialService.h"
 
 namespace H { extern App sApp; }
 

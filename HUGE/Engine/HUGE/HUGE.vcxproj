@@ -162,6 +162,7 @@
     <ClInclude Include="Inc\MetaRegistration.h" />
     <ClInclude Include="Inc\PerlinNoise.h" />
     <ClInclude Include="Inc\Quadtree.h" />
+    <ClInclude Include="Inc\RenderMaterialService.h" />
     <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\Skydome.h" />
     <ClInclude Include="Inc\SkydomeService.h" />
@@ -191,6 +192,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Src\Quadtree.cpp" />
+    <ClCompile Include="Src\RenderMaterialService.cpp" />
     <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\Skydome.cpp" />
     <ClCompile Include="Src\SkydomeService.cpp" />
