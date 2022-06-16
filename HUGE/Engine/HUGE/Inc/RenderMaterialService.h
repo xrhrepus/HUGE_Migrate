@@ -19,6 +19,7 @@ namespace H
 		void DebugUI() override;
 		void AddRenderMaterial(RenderMaterialEntry&& entry);
 		const RenderMaterialEntry& GetRenderMaterialEntry(const std::string& name) const;
+		RenderMaterialEntry& GetRenderMaterialEntry(const std::string& name);
 		void ForEachRenderMaterial(std::function<void(const RenderMaterialEntry&)> func) const;
 
 	private:

@@ -42,6 +42,17 @@ const RenderMaterialService::RenderMaterialEntry& H::RenderMaterialService::GetR
 	}
 }
 
+RenderMaterialService::RenderMaterialEntry& H::RenderMaterialService::GetRenderMaterialEntry(const std::string& name)
+{
+	for (auto& e : mRenderMaterialList)
+	{
+		if (e.name == name)
+		{
+			return e;
+		}
+	}
+}
+
 void H::RenderMaterialService::ForEachRenderMaterial(std::function<void(const RenderMaterialEntry&)> func) const
 {
 	for (const auto& e : mRenderMaterialList)
