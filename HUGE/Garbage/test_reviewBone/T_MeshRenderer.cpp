@@ -1,6 +1,8 @@
 #include "T_MeshRenderer.h"
 #include "T_Components.h"
 #include "T_Scene.h"
+#include "Graphics/Inc/StandardEffect.h"
+
 #pragma region Abstract render material
 void T_Material::Bind() const
 {

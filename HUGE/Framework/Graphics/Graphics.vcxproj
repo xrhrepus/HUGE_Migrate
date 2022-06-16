@@ -176,6 +176,7 @@
     <ClInclude Include="Inc\Model.h" />
     <ClInclude Include="Inc\ShaderEffect.h" />
     <ClInclude Include="Inc\Skeleton.h" />
+    <ClInclude Include="Inc\StandardEffect.h" />
     <ClInclude Include="Src\MeshIO.h" />
     <ClInclude Include="Inc\RasterizerState.h" />
     <ClInclude Include="Inc\RasterizerStateManager.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="Src\ShaderEffectManager.cpp" />
     <ClCompile Include="Src\SimpleDraw.cpp" />
     <ClCompile Include="Src\SpriteRenderer.cpp" />
+    <ClCompile Include="Src\StandardEffect.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\TextureManager.cpp" />
     <ClCompile Include="Src\TileMap.cpp" />

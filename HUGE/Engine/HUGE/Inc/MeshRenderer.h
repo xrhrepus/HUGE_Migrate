@@ -2,6 +2,7 @@
 #define HUGE_HMESHRENDERERCOMPONENT_H
 #include "Component.h"
 #include "MeshService.h"
+#include <Graphics/Inc/StandardEffect.h>
 
 namespace H
 {
@@ -17,7 +18,7 @@ namespace H
 		void DebugUI() override;
 
 		void SetMesh(const H::MeshService::MeshEntry& mesh);
-		void SetContext(const ShaderEffect_Standard::SE_Context_Standard& context);
+		void SetContext(const Graphics::ShaderEffect_Standard::SE_Context_Standard& context);
 
 
 	private:

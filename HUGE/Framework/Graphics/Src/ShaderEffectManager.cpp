@@ -1,5 +1,6 @@
 #include "Precompiled.h"
 #include "ShaderEffectManager.h"
+#include <StandardEffect.h>
 
 namespace
 {

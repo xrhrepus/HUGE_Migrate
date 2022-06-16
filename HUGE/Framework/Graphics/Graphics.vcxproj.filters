@@ -7,6 +7,15 @@
     <Filter Include="Src">
       <UniqueIdentifier>{fa879d02-5752-4569-a509-85e2d105ac97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{6ffdd23d-d016-4b2d-81d9-2a455e395e95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Abstract">
+      <UniqueIdentifier>{7045074a-63fd-4135-b38d-ec9b620d9cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Concrete">
+      <UniqueIdentifier>{21c9df36-5d5e-4f0f-a60e-9adde83327af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -126,12 +135,19 @@
     <ClInclude Include="Inc\Bone.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ShaderEffect.h" />
-    <ClInclude Include="Inc\ShaderEffectManager.h" />
     <ClInclude Include="Inc\ShaderEffectBufferType.h" />
     <ClInclude Include="Inc\ObjLoader.h" />
     <ClInclude Include="Inc\DepthStencilState.h" />
     <ClInclude Include="Inc\DepthStencilManager.h" />
+    <ClInclude Include="Inc\ShaderEffect.h">
+      <Filter>Shader\Abstract</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ShaderEffectManager.h">
+      <Filter>Shader\Abstract</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\StandardEffect.h">
+      <Filter>Shader\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GraphicsSystem.cpp">
@@ -218,10 +234,17 @@
     <ClCompile Include="Src\AnimationClip.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\ShaderEffect.cpp" />
-    <ClCompile Include="Src\ShaderEffectManager.cpp" />
     <ClCompile Include="Src\ObjLoader.cpp" />
     <ClCompile Include="Src\DepthStencilState.cpp" />
     <ClCompile Include="Src\DepthStencilManager.cpp" />
+    <ClCompile Include="Src\ShaderEffect.cpp">
+      <Filter>Shader\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ShaderEffectManager.cpp">
+      <Filter>Shader\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\StandardEffect.cpp">
+      <Filter>Shader\Concrete</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
