@@ -16,6 +16,15 @@
     <Filter Include="Shader\Concrete">
       <UniqueIdentifier>{21c9df36-5d5e-4f0f-a60e-9adde83327af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderMaterial">
+      <UniqueIdentifier>{d038d187-ae89-46e2-8e3b-50d361a90482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderMaterial\Abstract">
+      <UniqueIdentifier>{c45064bd-0fa2-4db8-ae57-a7a73c513798}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderMaterial\Concrete">
+      <UniqueIdentifier>{cd3c0aea-e9e0-4708-91e3-5328d747588f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -148,6 +157,9 @@
     <ClInclude Include="Inc\StandardEffect.h">
       <Filter>Shader\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RenderMaterial.h">
+      <Filter>RenderMaterial\Abstract</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GraphicsSystem.cpp">
@@ -245,6 +257,9 @@
     </ClCompile>
     <ClCompile Include="Src\StandardEffect.cpp">
       <Filter>Shader\Concrete</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RenderMaterial.cpp">
+      <Filter>RenderMaterial\Abstract</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

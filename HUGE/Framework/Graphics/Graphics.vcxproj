@@ -169,6 +169,7 @@
     <ClInclude Include="Inc\DepthStencilManager.h" />
     <ClInclude Include="Inc\DepthStencilState.h" />
     <ClInclude Include="Inc\ObjLoader.h" />
+    <ClInclude Include="Inc\RenderMaterial.h" />
     <ClInclude Include="Inc\ShaderEffectBufferType.h" />
     <ClInclude Include="Inc\ShaderEffectManager.h" />
     <ClInclude Include="Inc\GeometryShader.h" />
@@ -230,6 +231,7 @@
     </ClCompile>
     <ClCompile Include="Src\RasterizerState.cpp" />
     <ClCompile Include="Src\RasterizerStateManager.cpp" />
+    <ClCompile Include="Src\RenderMaterial.cpp" />
     <ClCompile Include="Src\RenderTarget.cpp" />
     <ClCompile Include="Src\Sampler.cpp" />
     <ClCompile Include="Src\SamplerManager.cpp" />
