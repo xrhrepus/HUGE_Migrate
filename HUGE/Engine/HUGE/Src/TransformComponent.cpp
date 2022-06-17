@@ -1,7 +1,6 @@
 #include "Precompiled.h"
 #include "TransformComponent.h"
 
-
 using namespace H;
 
 META_DERIVED_BEGIN(TransformComponent,Component)
@@ -27,9 +26,30 @@ void H::TransformComponent::DebugUI()
 {
 	if (ImGui::TreeNode("Transform"))
 	{
-		ImGui::DragFloat3("Position", position.v.data(), 0.01f);
-		ImGui::DragFloat4("Rotation", &rotation.x, 0.01f);
+		bool rotChanged = false;
+
+		ImGui::DragFloat3("pos", position.v.data(), 0.1f);
+		if (ImGui::DragFloat3("rot", rotation.v.data(), 0.1f))
+		{
+			rotChanged = true;
+		}
+		ImGui::Text("Quaternion:[ x: %f , y: %f , z: %f , w: %f ]", rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w);
+
+		ImGui::DragFloat3("scale", scale.v.data(), 0.1f);
+
+		if (rotChanged)
+		{
+			rotationQuat =
+				H::Math::QuaternionRotationAxis(Vector3::yAxis(), rotation.y) *
+				H::Math::QuaternionRotationAxis(Vector3::xAxis(), rotation.x) *
+				H::Math::QuaternionRotationAxis(Vector3::zAxis(), rotation.z);
+		}
 		ImGui::TreePop();
 	}
  
+}
+
+Matrix4 H::TransformComponent::computeTransform() const
+{
+	return Matrix4::scaling(scale) * H::Math::MatrixRotationQuaternion(rotationQuat) * Matrix4::translation(position);
 }
