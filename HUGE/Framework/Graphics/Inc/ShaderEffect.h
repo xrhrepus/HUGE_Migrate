@@ -30,6 +30,7 @@ namespace H::Graphics
 		virtual void DebugUI() = 0;
 		const Camera* camera = nullptr;
 		TransformData transformData;
+		DirectionalLight directionalLight;
 
 		std::function<void()> CreateDebugUI() const;
 		void CreateVec1DebugUI(const SD_Vec1_Ref& vec1Ref) const;

@@ -39,7 +39,6 @@ namespace H::Graphics
 		public:
 			void DebugUI() override;
 
-			DirectionalLight directionalLight;
 			MaterialSettings material =
 			{
 				{*this, "ambient"},
