@@ -2,6 +2,7 @@
 #include "MeshRenderer.h"
 #include "GameObject.h"
 #include "World.h"
+#include "CameraService.h"
 
 using namespace H;
 using namespace H::Graphics;
@@ -13,9 +14,14 @@ META_CLASS_END
 
 void H::MeshRenderer::Initialize()
 {
+	auto& world = GetOwner().GetWorld();
 	mStandardShaderEffect =
 		static_cast<const ShaderEffect_Standard*>(&ShaderEffectManager::Get()->GetEffect("Standard"));
-	SetMesh(GetOwner().GetWorld().GetService<H::MeshService>()->GetMeshEntry("cube"));
+	SetMesh(world.GetService<H::MeshService>()->GetMeshEntry("cube"));
+	SetRenderMaterial(world.GetService<H::RenderMaterialService>()->GetRenderMaterialEntry("Standard"));
+	mCamera = &world.GetService<H::CameraService>()->GetActiveCamera();
+	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
+	mLightServicePtr = world.GetService<H::LightService>();
 }
  
 void H::MeshRenderer::Terminate()
@@ -29,10 +35,16 @@ void H::MeshRenderer::Update(float deltatime)
 
 void H::MeshRenderer::Render()
 {
-	mStandardShaderEffect->Bind();
-	mStandardShaderEffect->SetContextInfo(mStandardContext);
+	Matrix4 vm = mCamera->GetViewMatrix();
+	Matrix4 pm = mCamera->GetPerspectiveMatrix();
+	Matrix4 world = mTransformComponent->computeTransform();
+	mRenderMaterial->material.SetTransform(TransformData{ H::Math::Transpose(world) ,H::Math::Transpose(world * vm * pm) ,mCamera->GetPosition() });
+	mRenderMaterial->material.SetCamera(*mCamera);
+	mRenderMaterial->material.SetLight(mLightServicePtr->GetDirectionalLightEntry("Directional Light").dirLight);
+
+	mRenderMaterial->material.Bind();
 	mMeshBuffer.Render();
-	mStandardShaderEffect->UnBind();
+	mRenderMaterial->material.UnBind();
 }
 
 void H::MeshRenderer::DebugUI()
@@ -48,6 +60,7 @@ void H::MeshRenderer::DebugUI()
 		{
 			ImGui::OpenPopup("MeshSelect");
 		}
+
 		ImGui::Separator();
 		if (ImGui::BeginPopup("MeshSelect"))
 		{
@@ -65,7 +78,7 @@ void H::MeshRenderer::DebugUI()
 			}
 			ImGui::EndPopup();
 		}
-
+		mRenderMaterial->material.DebugUI();
 		
 		ImGui::PopID();
 		ImGui::TreePop();
@@ -78,6 +91,11 @@ void H::MeshRenderer::SetMesh(const H::MeshService::MeshEntry& mesh)
 	mMesh = &mesh;
 	mMeshBuffer.Terminate();
 	mMeshBuffer.Initialize(mMesh->mesh, false);
+}
+
+void H::MeshRenderer::SetRenderMaterial(H::RenderMaterialService::RenderMaterialEntry& material)
+{
+	mRenderMaterial = &material;
 }
 
 void H::MeshRenderer::SetContext(const ShaderEffect_Standard::SE_Context_Standard & context)

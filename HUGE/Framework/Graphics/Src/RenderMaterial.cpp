@@ -27,14 +27,18 @@ void H::Graphics::RenderMaterial::UnBind() const
 
 void H::Graphics::RenderMaterial::SetTransform(const TransformData& data)
 {
+	mShaderEffectContext->transformData = data;
 }
 
 void H::Graphics::RenderMaterial::SetCamera(const Camera& cam)
 {
+	mShaderEffectContext->camera = &cam;
+
 }
 
 void H::Graphics::RenderMaterial::SetLight(const DirectionalLight& light)
 {
+	mShaderEffectContext->directionalLight = light;
 }
 
 void H::Graphics::RenderMaterial::DebugUI()
