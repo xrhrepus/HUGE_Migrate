@@ -12,6 +12,7 @@
 #include "TerrainService.h"
 #include "MeshService.h"
 #include "RenderMaterialService.h"
+#include "LightService.h"
 
 
 void H::StaticMetaRegistration()
@@ -27,5 +28,6 @@ void H::StaticMetaRegistration()
 	META_REGISTRY(H::TerrainService);
 	META_REGISTRY(H::MeshService);
 	META_REGISTRY(H::RenderMaterialService);
+	META_REGISTRY(H::LightService);
 
 }

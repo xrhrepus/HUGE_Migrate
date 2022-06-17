@@ -93,6 +93,9 @@
     <ClInclude Include="Inc\RenderMaterialService.h">
       <Filter>EditorService</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\LightService.h">
+      <Filter>EditorService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Precompiled.cpp">
@@ -147,6 +150,9 @@
       <Filter>EditorService</Filter>
     </ClCompile>
     <ClCompile Include="Src\RenderMaterialService.cpp">
+      <Filter>EditorService</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LightService.cpp">
       <Filter>EditorService</Filter>
     </ClCompile>
   </ItemGroup>

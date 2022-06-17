@@ -157,6 +157,7 @@
     <ClInclude Include="Inc\GameObjectFactory.h" />
     <ClInclude Include="Inc\HUGE.h" />
     <ClInclude Include="Inc\Editor.h" />
+    <ClInclude Include="Inc\LightService.h" />
     <ClInclude Include="Inc\MeshRenderer.h" />
     <ClInclude Include="Inc\MeshService.h" />
     <ClInclude Include="Inc\MetaRegistration.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Src\GameObjectFactory.cpp" />
     <ClCompile Include="Src\HUGE.cpp" />
     <ClCompile Include="Src\Editor.cpp" />
+    <ClCompile Include="Src\LightService.cpp" />
     <ClCompile Include="Src\MeshRenderer.cpp" />
     <ClCompile Include="Src\MeshService.cpp" />
     <ClCompile Include="Src\MetaRegistration.cpp" />
