@@ -140,8 +140,11 @@ void H::Editor::ShowSceneView(const RenderTarget& rt)
 	vMax.x += ImGui::GetWindowPos().x;
 	vMax.y += ImGui::GetWindowPos().y;
 
+	const float dx = vMax.x - vMin.x;
+	const float dy = (9.0f / 16.0f) * dx;
+
 	ImGui::GetForegroundDrawList()->AddRect(vMin, vMax, IM_COL32(0, 255, 0, 255));
-	ImGui::Image(rt.GetShaderResourceView(), ImVec2{ vMax.x - vMin.x,vMax.y - vMin.y });
+	ImGui::Image(rt.GetShaderResourceView(), ImVec2{ dx,dy });
 	ImGui::CaptureMouseFromApp(!ImGui::IsItemHovered());
 	ImGui::End();
 
