@@ -27,7 +27,7 @@ void MainState::Initialize()
 
 	mWorld.Create(L"../../Assets/Templates/test.json", "main123qwer");
 
-	mSceneRenderTarget.Initialize(gSys->GetBackBufferHeight(), gSys->GetBackBufferWidth(), RenderTarget::Format::RGBA_U8);
+	mSceneRenderTarget.Initialize(gSys->GetBackBufferWidth(), gSys->GetBackBufferHeight(), RenderTarget::Format::RGBA_U8);
 
 }
 

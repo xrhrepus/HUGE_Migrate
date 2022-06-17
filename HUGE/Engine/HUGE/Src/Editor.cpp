@@ -141,7 +141,7 @@ void H::Editor::ShowSceneView(const RenderTarget& rt)
 	vMax.y += ImGui::GetWindowPos().y;
 
 	const float dx = vMax.x - vMin.x;
-	const float dy = (9.0f / 16.0f) * dx;
+	const float dy = (dx / rt.GetViewPortAspectRatio());
 
 	ImGui::GetForegroundDrawList()->AddRect(vMin, vMax, IM_COL32(0, 255, 0, 255));
 	ImGui::Image(rt.GetShaderResourceView(), ImVec2{ dx,dy });
