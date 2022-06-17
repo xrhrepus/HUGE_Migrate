@@ -30,8 +30,9 @@ public:
 	void BindPS(uint32_t slot);
 	void UnbindPS(uint32_t slot);
 	void Reset();
-	ID3D11ShaderResourceView* GetShaderResourceView() const { return mShaderResourceView; }
+	ID3D11ShaderResourceView* GetShaderResourceView() const;
 	void SetClearColor(float r, float g, float b, float a);
+	float GetViewPortAspectRatio() const;
 private:
 	float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // RGBA
 

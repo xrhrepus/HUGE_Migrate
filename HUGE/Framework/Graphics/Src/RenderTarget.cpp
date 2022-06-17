@@ -119,6 +119,10 @@ void RenderTarget::Reset()
 	context->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
  }
+ID3D11ShaderResourceView* H::Graphics::RenderTarget::GetShaderResourceView() const
+{
+	return mShaderResourceView;
+}
 
 void H::Graphics::RenderTarget::SetClearColor(float r, float g, float b, float a)
 {
@@ -126,4 +130,8 @@ void H::Graphics::RenderTarget::SetClearColor(float r, float g, float b, float a
 	ClearColor[1] = g;
 	ClearColor[2] = b;
 	ClearColor[3] = a;
+}
+float H::Graphics::RenderTarget::GetViewPortAspectRatio() const
+{
+	return mViewport.Width / mViewport.Height;
 }
