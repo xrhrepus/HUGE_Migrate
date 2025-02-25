@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{7011D9EB-BF54-4747-8E8E-B7BD45C703A9}"
 EndProject
@@ -126,6 +126,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_NewRenderer", "Garbage\Test_NewRenderer\Test_NewRenderer.vcxproj", "{C25B8D92-3145-4263-A137-A1DDBB2384E6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_reviewBone", "Garbage\test_reviewBone\test_reviewBone.vcxproj", "{D850A282-D362-4A2D-A84D-76209AED0FEA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_RenderPipeline_2025", "Garbage\Test_RenderPipeline_2025\Test_RenderPipeline_2025.vcxproj", "{9883A225-10AF-453E-BFC7-32BD5A739B73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -455,6 +457,14 @@ Global
 		{D850A282-D362-4A2D-A84D-76209AED0FEA}.Release|x64.Build.0 = Release|x64
 		{D850A282-D362-4A2D-A84D-76209AED0FEA}.Release|x86.ActiveCfg = Release|Win32
 		{D850A282-D362-4A2D-A84D-76209AED0FEA}.Release|x86.Build.0 = Release|Win32
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Debug|x64.ActiveCfg = Debug|x64
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Debug|x64.Build.0 = Debug|x64
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Debug|x86.ActiveCfg = Debug|Win32
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Debug|x86.Build.0 = Debug|Win32
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Release|x64.ActiveCfg = Release|x64
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Release|x64.Build.0 = Release|x64
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Release|x86.ActiveCfg = Release|Win32
+		{9883A225-10AF-453E-BFC7-32BD5A739B73}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -501,6 +511,7 @@ Global
 		{F8623C47-87EE-4A47-91C0-4C6019D1685D} = {45C01E51-757E-4C15-981B-CFC61E60D621}
 		{C25B8D92-3145-4263-A137-A1DDBB2384E6} = {45C01E51-757E-4C15-981B-CFC61E60D621}
 		{D850A282-D362-4A2D-A84D-76209AED0FEA} = {45C01E51-757E-4C15-981B-CFC61E60D621}
+		{9883A225-10AF-453E-BFC7-32BD5A739B73} = {45C01E51-757E-4C15-981B-CFC61E60D621}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F7CA880-BBCA-466B-B682-ACB206E5AEA7}
