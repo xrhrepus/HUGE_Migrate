@@ -26,6 +26,7 @@
 #include "PixelShader.h"
 #include "GeometryShader.h"//191014
 #include "ConstantBuffer.h"
+#include "StructuredBuffer.h"
 #include "Sampler.h"
 //
 #include "BlendState.h"

@@ -27,6 +27,7 @@ namespace Graphics {
 		void Update(const void* vertexData, uint32_t numOfVert, const void* indexData, uint32_t numOfIndex);
 
 		void Render() const;//render const
+		void RenderInstanced(UINT instanceCount) const;
 
 	private:
 		ID3D11Buffer* mVertexBuffer{ nullptr };//main verts

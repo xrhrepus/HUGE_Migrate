@@ -160,6 +160,9 @@
     <ClInclude Include="Inc\RenderMaterial.h">
       <Filter>RenderMaterial\Abstract</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\StructuredBuffer.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GraphicsSystem.cpp">
@@ -260,6 +263,9 @@
     </ClCompile>
     <ClCompile Include="Src\RenderMaterial.cpp">
       <Filter>RenderMaterial\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\StructuredBuffer.cpp">
+      <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

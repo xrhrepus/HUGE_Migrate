@@ -94,6 +94,27 @@ void MeshBuffer::Render() const//to fix
 		context->Draw(mVertexCount, 0);
 	}
 }
+void MeshBuffer::RenderInstanced(UINT instanceCount) const
+{
+	UINT stride = mVertexSize;
+	UINT offset = 0;
+	auto context = GetContext();
+	context->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+	context->IASetPrimitiveTopology(mTopology);
+
+
+
+	if (mIndexBuffer != nullptr)
+	{
+		context->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexedInstanced(mIndexCount, instanceCount, 0, 0, 0);
+	}
+	else
+	{
+		//todo d instanced
+		context->Draw(mVertexCount, 0);
+	}
+}
 void MeshBuffer::InitVertexBuffer(const void* vertexData, uint32_t NumOfVert, uint32_t vertexSize, bool dynamic)
 {
 	mVertexSize = vertexSize;
