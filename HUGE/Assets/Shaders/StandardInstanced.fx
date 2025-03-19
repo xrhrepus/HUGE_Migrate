@@ -164,7 +164,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 	if (specularMapWeight > 0.0f)
 		specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
 
-	float4 color = (ambient + diffuse) * textureColor * brightness + specular * specularFactor;
+	float4 color = (ambient + diffuse) * textureColor * 1 + specular * specularFactor;
 
 	if (useShadow)
 	{

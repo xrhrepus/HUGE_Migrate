@@ -107,7 +107,7 @@ void MyAppState::Initialize()
 
 #pragma endregion
 
-
+	mTInstanceDraw.Init();
 	// end testing
 }
 
@@ -121,72 +121,12 @@ void MyAppState::Terminate()
 
 void MyAppState::Render()
 {
-	SamplerManager::Get()->GetSampler(SamplerType::LinearWrap)->BindPS();
+	DepthStencilManager::Get()->GetDepthStencilState("ZTest")->Set();
 
-	Matrix4 vm = mCamera.GetViewMatrix();
-	Matrix4 pm = mCamera.GetPerspectiveMatrix();
-	Matrix4 worldMat;
-	worldMat.Translation({ -10.0f,0.0f,0.0f });
-	Matrix4 world = worldMat;
-	Matrix4 comp = world * vm * pm;
+	TextureManager::Get()->GetTexture(mDiffuseMap)->BindPS(0);
 
-	TInstanceData insDatas[10];
-	Material mats[10];
-	TransformData tfs[10];
-	TransformData tf;
-	tf.world = H::Math::Transpose(world);
-	tf.wvp = H::Math::Transpose(comp);
-	tf.viewPosition = mCamera.GetPosition();
-	Material m{};
-	m.diffuse = H::Graphics::Colors::Red;
-	for (size_t i = 0; i < 10; i++)
-	{
-		insDatas[i] = { 0,0,0,0 };
-		tfs[i] = (tf);
-		mats[i] = m;
-	}
+	mTInstanceDraw.Draw(*mCurrentCam);
 
-	{
-		// something can be done be render pass
-		Matrix4 worldMat1;
-		worldMat1.Translation({ -20.0f,0.0f,0.0f });
-		Matrix4 world1 = worldMat1;
-		Matrix4 comp1 = world1 * vm * pm;
-		TransformData tf1;
-		tf1.world = H::Math::Transpose(world1);
-		tf1.wvp = H::Math::Transpose(comp1);
-		tf1.viewPosition = mCamera.GetPosition();
-
-		Material m{};
-		m.diffuse = H::Graphics::Colors::Green;
-
-		insDatas[1] = { 1,1,1,1 };
-		tfs[1] = (tf1);
-		mats[1] = m;
-	}
-
-	tb.Set(tfs);
-	lb.Set(H::Graphics::DirectionalLight{});
-	mb.Set(mats);
-
-	sbt.Set(tfs[0]);
-	sbm.Set(mats[0]);
-	sbi.Set(insDatas[0]);
-
-	// Pass the constbuf reference to material.
-	mMaterial->SetConstantBuffer("TransformBuffer", tb);
-	mMaterial->SetConstantBuffer("LightBuffer", lb);
-	mMaterial->SetConstantBuffer("MaterialBuffer", mb);
-
-
-	mMaterial->Bind(H::Graphics::GetContext());
-	sbi.BindVS(6);
-	sbi.BindPS(6);
-	sbt.BindVS(7);
-	sbt.BindPS(7);
-	sbm.BindVS(8);
-	sbm.BindPS(8);
-	mMeshRenderer.mMeshBuffer.RenderInstanced(3);
 
 	RenderScene();
 }

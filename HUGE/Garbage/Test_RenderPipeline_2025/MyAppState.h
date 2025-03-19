@@ -56,5 +56,7 @@ private:
 	std::unique_ptr<TMaterial> mMaterial;
 	TMeshRenderer mMeshRenderer;
 	TRenderPass mRenderPass;
+
+	TSampleInstancedRendering mTInstanceDraw;
 };
 
