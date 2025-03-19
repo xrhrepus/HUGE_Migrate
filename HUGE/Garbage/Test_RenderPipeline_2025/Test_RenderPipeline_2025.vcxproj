@@ -136,9 +136,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MyAppState.h" />
+    <ClInclude Include="TRenderPipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyAppState.cpp" />
+    <ClCompile Include="TRenderPipeline.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
