@@ -11,14 +11,16 @@ H::Graphics::StructuredBuffer::~StructuredBuffer()
 	ASSERT(mStructuredBuffer == nullptr, "[StructuredBuffer] buffer not released ");
 }
 
-void StructuredBuffer::Initialize(uint32_t typeSize, uint32_t numberOfElements, const void* initData)
+void StructuredBuffer::Initialize(uint32_t typeSize, uint32_t numberOfElements, bool dynamic, const void* initData)
 {
+	mIsDynamic = dynamic;
 	//=============
 //constant buffer ->(compute shader) -> vertex
 	D3D11_BUFFER_DESC desc{};
 	desc.ByteWidth = typeSize * numberOfElements;
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 	//?
 	desc.StructureByteStride = typeSize;
 	//?
@@ -48,9 +50,33 @@ void StructuredBuffer::Terminate()
 	SafeRelease(mStructuredBuffer);
 }
 
-void  StructuredBuffer::Set(const void* data) const
+void StructuredBuffer::Set(const void* data) const
 {
+	ASSERT(!mIsDynamic, "[StructuredBuffer] dynamic buffer should use Map/UnMap");
 	GetContext()->UpdateSubresource(mStructuredBuffer, 0, nullptr, data, 0, 0);
+}
+
+void StructuredBuffer::Map(const void* data, uint32_t byteToMap) const
+{
+	ASSERT(mIsDynamic, "[StructuredBuffer] non-dynamic buffer should use Set");
+	const bool validDataToCopy = data != nullptr || byteToMap == 0;
+	ASSERT(validDataToCopy, "[StructuredBuffer] invalid data to set");
+	if (!validDataToCopy)
+	{
+		return;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = GetContext()->Map(mStructuredBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	ASSERT(SUCCEEDED(hr), "[StructuredBuffer] failed to update buffer");
+	if (SUCCEEDED(hr))
+	{
+		// Copy data into the mapped memory
+		memcpy(mappedResource.pData, data, byteToMap);
+
+		// Unmap the buffer to apply changes
+		GetContext()->Unmap(mStructuredBuffer, 0);
+	}
 }
 
 void StructuredBuffer::BindVS(uint32_t slot) const
