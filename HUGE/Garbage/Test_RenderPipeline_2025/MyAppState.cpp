@@ -27,7 +27,7 @@ void MyAppState::Initialize()
 	// These should be from some component ?
 
 	mShader = std::make_unique<TShader>(STANDARD_INSTANCED_FILE_PATH);
-	mMaterial = std::make_unique<TMaterial>(*mShader);
+	//mMaterial = std::make_unique<TMaterial>(*mShader);
 
 
 // Hardcoded or Initialized data. These are set before game starts
@@ -36,20 +36,20 @@ void MyAppState::Initialize()
 	// 1 Shader instance = 1 Shader file
 	// Resources used by shader and slots. Should be done by reflection
 	// The name is the variable name in shader
-	mShader->mConstantDatas.push_back(ShaderConstantBuffer{ "TransformBuffer",sizeof(H::Graphics::TransformData),0 });
-	mShader->mConstantDatas.push_back(ShaderConstantBuffer{ "LightBuffer",sizeof(H::Graphics::LightBuffer),1 });
-	mShader->mConstantDatas.push_back(ShaderConstantBuffer{ "MaterialBuffer",sizeof(H::Graphics::MaterialBuffer),2 });
-	mShader->mTextures.push_back(ShaderResource{ "diffuseMap", 0 });
-	mShader->mTextures.push_back(ShaderResource{ "specularMap", 1 });
-	mShader->mTextures.push_back(ShaderResource{ "displacementMap", 2 });
-	mShader->mTextures.push_back(ShaderResource{ "normalMap", 3 });
+	//mShader->mConstantBuffers.emplace("TransformBuffer", ShaderResource{ 1,0 });
+	//mShader->mConstantBuffers.emplace( "LightBuffer",1,1 );
+	//mShader->mConstantBuffers.emplace( "MaterialBuffer",1,2 );
+	//mShader->mTextures.emplace( "diffuseMap",1, 0 );
+	//mShader->mTextures.emplace( "specularMap",1, 1 );
+	//mShader->mTextures.emplace( "displacementMap",1, 2 );
+	//mShader->mTextures.emplace( "normalMap",1, 3 );
 
 	// Materials. Share the same Shader. 
 	// But need to be individual instance if using different data or texture
-	mMaterial->SetTexture("diffuseMap", mDiffuseMap);
-	mMaterial->SetTexture("specularMap", mSpecularMap);
-	mMaterial->SetTexture("displacementMap", mDisplacementMap);
-	mMaterial->SetTexture("normalMap", mNormalMap);
+	//mMaterial->SetTexture("diffuseMap", mDiffuseMap);
+	//mMaterial->SetTexture("specularMap", mSpecularMap);
+	//mMaterial->SetTexture("displacementMap", mDisplacementMap);
+	//mMaterial->SetTexture("normalMap", mNormalMap);
 
 	// These const buffers should from some memory block/pool
 	tb.Initialize();
@@ -92,9 +92,9 @@ void MyAppState::Initialize()
 	sbi.Set(insDatas[0]);
 
 	// Pass the constbuf reference to material.
-	mMaterial->SetConstantBuffer("TransformBuffer", tb);
-	mMaterial->SetConstantBuffer("LightBuffer", lb);
-	mMaterial->SetConstantBuffer("MaterialBuffer", mb);
+	//mMaterial->SetConstantBuffer("TransformBuffer", tb);
+	//mMaterial->SetConstantBuffer("LightBuffer", lb);
+	//mMaterial->SetConstantBuffer("MaterialBuffer", mb);
 	// for runtime data like transform, we can update the respective buffer with Set()
 	// todo: Doing this makes 1 draw call per object.  Can do some optimization for batch rendering
 	// Batch rendereing needs different shader, may keep this for single render, and have a different Material for batching.
@@ -125,8 +125,9 @@ void MyAppState::Render()
 
 	TextureManager::Get()->GetTexture(mDiffuseMap)->BindPS(0);
 
-	mTInstanceDraw.Draw(*mCurrentCam);
-
+	//mTInstanceDraw.Draw(*mCurrentCam);
+	mTInstanceDraw.DrawWithRenderPass(*mCurrentCam);
+	
 
 	RenderScene();
 }

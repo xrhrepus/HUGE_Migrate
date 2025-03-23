@@ -5,111 +5,52 @@
 
 using namespace H::Graphics;
 
-class TGameObject {
-public:
+struct TRenderInstanceData {
+    UINT mLightIdx;
+    UINT mMaterialIdx;
+    UINT mDiffuseMapIdx;
+    UINT padding;
 };
 
-struct ShaderConstantBuffer {
-    std::string name;
-    UINT size;
-    UINT bindPoint;
-};
-
-struct ShaderResource {
-    std::string name;
-    UINT bindPoint;
-};
-
-
-/// <summary>
-/// Shader reflect shader file info, and stored semantic names + slots. So only Material only bind necessary data
-/// </summary>
 class TShader {
 public:
-    TShader(const std::filesystem::path& path) {
-        mVs.Initialize(path.wstring().c_str());
-        mPs.Initialize(path.wstring().c_str(),"PS");
-    }
+    TShader(const std::filesystem::path& path);
 
-    void Bind(ID3D11DeviceContext* context) const {
-        mVs.Bind();
-        mPs.Bind();
-    }
+    void Bind(ID3D11DeviceContext* context) const;
+    TRenderInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
+    void batchMaterialData();
+
+
     void ReflectConstantBuffers(ID3DBlob* shaderBlob);
     void ReflectResources(ID3DBlob* shaderBlob);
 
 	VertexShader mVs;
 	PixelShader mPs;
-    std::vector<ShaderConstantBuffer> mConstantDatas;
-    std::vector<ShaderResource> mTextures;
-    std::vector<ShaderResource> mSamplers;
+
+    static constexpr size_t MAX_INSTANCE_COUNT = 100;
+
+    std::vector<DirectionalLight> tempLight;
+    std::vector<Material> tempMat;
+    std::vector<TextureId> tempTexture;
+
+    H::Graphics::TypedStructuredBuffer<DirectionalLight, MAX_INSTANCE_COUNT> sbl;
+    H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
+    H::Graphics::TextureArray difuseTextures;
 };
 
-
-/// <summary>
-/// Contain resource reference.
-/// </summary>
 class TMaterial {
 public:
-    TMaterial(const TShader& shader) 
-        : mShader(shader) {
-    }
+    TMaterial(TShader& shader, DirectionalLight dl, Material mt, TextureId texId);
 
-    void SetTexture(const std::string& name, H::Graphics::TextureId texture) {
-        textures[name] = texture;
-    }
-
-    // These should be data that are fixed. Like color.
-    void SetConstantBuffer(const std::string& name, const H::Graphics::ConstantBuffer& buffer) {
-        constantBuffers.emplace(name, buffer);
-    }
-
-    void Bind(ID3D11DeviceContext* context) {
-        mShader.Bind(context);
-
-        for (const auto& cb : mShader.mConstantDatas) {
-            auto it = constantBuffers.find(cb.name);
-            if (it != constantBuffers.end()) {
-                it->second.get().BindVS(cb.bindPoint);
-                it->second.get().BindPS(cb.bindPoint);
-            }
-        }
-
-        for (const auto& tex : mShader.mTextures) {
-            auto it = textures.find(tex.name);
-            if (it != textures.end()) {
-                TextureManager::Get()->GetTexture(it->second)->BindPS(0);
-            }
-        }
-
-        // todo: sampler
-    }
-
+    void Bind(ID3D11DeviceContext* context);
 
     const TShader& mShader;
-    // Name in shader, texture
-    std::unordered_map<std::string, H::Graphics::TextureId> textures;
-    // Material holds the buffer, and use data from elsewhere
-    std::unordered_map<std::string, std::reference_wrapper<const H::Graphics::ConstantBuffer>> constantBuffers;
-    std::unordered_map<std::string, ID3D11SamplerState*> samplers;
+    TRenderInstanceData mrid;
 
-    std::unordered_set<std::string> mNonSharedDataBufferName;
+    DirectionalLight dl;
+    Material mt;
+    TextureId diffuseTex;
 };
-
-/// <summary>
-/// Each object will own individual instance.  
-/// Runtime data goes here, so render pass doesn't need to rebind shared part of material
-/// </summary>
-class TMaterialInstance {
-public:
-	TMaterialInstance(TMaterial& sourceMat) 
-        : mSourceMat(sourceMat) {
-    }
-
-    TMaterial& mSourceMat;
-    std::unordered_set<std::string> mOverrideData;
-};
-
 
 /// <summary>
 /// Vertex with additional instanceID to support batch rendering. Later moved to Graphics lib.
@@ -164,6 +105,13 @@ struct TInstanceData {
     UINT mDiffuseMapIdx;
 };
 
+struct TDrawCommand {
+    TMaterial* mat;
+    H::Graphics::MeshBuffer* meshBuf;
+    uint32_t numOfInstance;
+    std::vector<H::Graphics::TransformData> tf;
+};
+
 
 /// <summary>
 /// Interface. Each can have optional multiple input and 1 optional output RT. Inout are stored in Pipeline. 
@@ -171,17 +119,22 @@ struct TInstanceData {
 /// </summary>
 class TRenderPass {
 public:
-    void execute() {
-        // shader bind
 
+    void Init();
 
-    }
+    void Term();
 
-    void add() {
-        // meshbuffer, 
-    }
+    // make these pure v
+    void execute();
 
-    TShader* mShader;
+    void add(TDrawCommand&& cmd);
+
+    void clear();
+
+    H::Graphics::TypedConstantBuffer<TRenderInstanceData> mRenderInstanceBuf;
+    H::Graphics::TypedStructuredBuffer<TransformData, 100> mTransformBuf;
+    std::unordered_map<TMaterial*, std::vector<TDrawCommand>> mDrawRequests;
+
 };
 
 /// <summary>
@@ -189,8 +142,6 @@ public:
 /// </summary>
 class TRenderPipeline {
 public:
-
-
     std::vector<TRenderPass*> mRPs;
     std::unordered_map<std::string, ID3D11ShaderResourceView*> mRPOutput;
 };
@@ -203,105 +154,22 @@ struct TSampleInstancedRendering {
 
     std::unique_ptr<TShader> mShader;
     std::unique_ptr<TMaterial> mMaterial;
+    std::unique_ptr<TMaterial> mMaterial2;
     TMeshRenderer mMeshRenderer;
 
-    H::Graphics::LightBuffer lb;
+    TextureId mDiffuseTex;
+    TextureId mDiffuseTex2;
+   // H::Graphics::LightBuffer lb;
 
     H::Graphics::TypedStructuredBuffer<TInstanceData, MAX_INSTANCE_COUNT> sbi;
     H::Graphics::TypedStructuredBuffer<TransformData, MAX_INSTANCE_COUNT> sbt;
     H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
 
-    void Init() {
-        const wchar_t* STANDARD_INSTANCED_FILE_PATH = L"../../Assets/Shaders/StandardInstanced.fx";
+    TRenderPass mRenderPass;
 
-        mShader = std::make_unique<TShader>(STANDARD_INSTANCED_FILE_PATH);
-        mMaterial = std::make_unique<TMaterial>(*mShader);
+    void Init();
+    void Term();
+    void DrawWithRenderPass(const Camera& cam);
 
-        lb.Initialize();
-
-        sbt.Initialize();
-        sbm.Initialize();
-        sbi.Initialize();
-
-        auto m = MeshBuilder::CreateCube(5,5,5, { 0.0f,0.0f,0.0f });
-        mMeshRenderer.mMesh = m;
-        mMeshRenderer.mMeshBuffer.Initialize(mMeshRenderer.mMesh);
-
-        mShader->mConstantDatas.push_back(ShaderConstantBuffer{ "LightBuffer",sizeof(H::Graphics::LightBuffer),1 });
-        mMaterial->SetConstantBuffer("LightBuffer", lb);
-    }
-    void Term() {
-
-    }
-    void Draw(const Camera& cam) {
-        SamplerManager::Get()->GetSampler(SamplerType::LinearWrap)->BindPS();
-        lb.Set(H::Graphics::DirectionalLight{});
-
-        Matrix4 vm = cam.GetViewMatrix();
-        Matrix4 pm = cam.GetPerspectiveMatrix();
-        Matrix4 worldMat;
-        worldMat.Translation({ -10.0f,0.0f,0.0f });
-        Matrix4 world = worldMat;
-        Matrix4 comp = world * vm * pm;
-
-        TInstanceData insDatas[10];
-        Material mats[10];
-        TransformData tfs[10];
-
-        //{
-        //    // something can be done be render pass
-        //    Matrix4 worldMat1;
-        //    worldMat1.Translation({ -20.0f,0.0f,0.0f });
-        //    Matrix4 world1 = worldMat1;
-        //    Matrix4 comp1 = world1 * vm * pm;
-        //    TransformData tf1;
-        //    tf1.world = H::Math::Transpose(world1);
-        //    tf1.wvp = H::Math::Transpose(comp1);
-        //    tf1.viewPosition = cam.GetPosition();
-
-        //    Material m{};
-        //    m.diffuse = H::Graphics::Colors::Green;
-
-        //    insDatas[1] = { 1,1,1,1 };
-        //    tfs[1] = (tf1);
-        //    mats[1] = m;
-        //}
-        for (size_t i = 0; i < 10; i++)
-        {
-            Matrix4 worldMat1;
-            worldMat1.Translation({ -20.0f * i,0.0f,0.0f });
-            Matrix4 world1 = worldMat1;
-            Matrix4 comp1 = world1 * vm * pm;
-            TransformData tf1;
-            tf1.world = H::Math::Transpose(world1);
-            tf1.wvp = H::Math::Transpose(comp1);
-            tf1.viewPosition = cam.GetPosition();
-
-            Material m{};
-            m.diffuse = Color(i, i, i, 1);
-
-            UINT insDataIdx = static_cast<UINT>(i);
-            insDatas[i] = { insDataIdx,insDataIdx,insDataIdx,insDataIdx };
-            tfs[i] = (tf1);
-            mats[i] = m;
-        }
-
-
-        sbt.Set(tfs[0]);
-        sbm.Set(mats[0]);
-        sbi.Set(insDatas[0]);
-        
-        lb.Set(H::Graphics::DirectionalLight{});
-
-        sbi.BindVS(6);
-        //sbi.BindPS(6);
-        sbt.BindVS(7);
-        //sbt.BindPS(7);
-        //sbm.BindVS(8);
-        sbm.BindPS(8);
-
-        mMaterial->SetConstantBuffer("LightBuffer", lb);
-        mMaterial->Bind(H::Graphics::GetContext());
-        mMeshRenderer.mMeshBuffer.RenderInstanced(10);
-    }
+    void Draw(const Camera& cam);
 };

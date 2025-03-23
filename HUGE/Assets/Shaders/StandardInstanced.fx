@@ -18,6 +18,15 @@ struct TransformData
 };
 StructuredBuffer<TransformData> TransformBuffer : register(t7);
 
+cbuffer RenderInstanceData : register(b10)
+{
+    int lightIndex;
+    int materialIndex;
+    int diffuseIndex;
+    int padding;
+};
+//StructuredBuffer<RenderInstanceData> RenderInstanceBuffer : register(t10);
+
 cbuffer TransformBuffer : register(b0)
 {
     matrix World;
@@ -25,13 +34,13 @@ cbuffer TransformBuffer : register(b0)
     float3 ViewPosition;
 }
 
-cbuffer LightBuffer : register(b1)
-{
-	float3 LightDirection;
-	float4 LightAmbient;
-	float4 LightDiffuse;
-	float4 LightSpecular;
-}
+//cbuffer LightBuffer : register(b1)
+//{
+//	float3 LightDirection;
+//	float4 LightAmbient;
+//	float4 LightDiffuse;
+//	float4 LightSpecular;
+//}
 
 //cbuffer MaterialBuffer : register(b2)
 //{
@@ -49,6 +58,18 @@ struct MaterialData
     float3 pad;
 };
 StructuredBuffer<MaterialData> MaterialBuffer : register(t8);
+
+struct DirectionalLightData
+{
+    float3 LightDirection;
+    float pad;
+    float4 LightAmbient;
+    float4 LightDiffuse;
+    float4 LightSpecular;
+};
+StructuredBuffer<DirectionalLightData> DirectionalLightBuffer : register(t9);
+
+Texture2DArray textureArray : register(t10);
 
 cbuffer SettingsBuffer : register(b3)
 {
@@ -92,15 +113,15 @@ struct VS_OUTPUT
 	float3 dirToView : TEXCOORD2;
 	float2 texCoord	: TEXCOORD3;
 	float4 positionNDC : TEXCOORD4;
-    int materialIndex : MATERIAL_INDEX;
+    //int materialIndex : MATERIAL_INDEX;
 };
 
 VS_OUTPUT VS(VS_INPUT input, uint svInstanceId : SV_InstanceID)
 {
 	VS_OUTPUT output;
 	
-    InstanceData iData = instanceBuffer[svInstanceId];
-    TransformData tf = TransformBuffer[iData.transformIndex];
+    //InstanceData iData = instanceBuffer[svInstanceId];
+    TransformData tf = TransformBuffer[svInstanceId];
     matrix World = tf.World;
     matrix WVP = tf.WVP;
     float3 ViewPosition = tf.ViewPosition;
@@ -114,14 +135,14 @@ VS_OUTPUT VS(VS_INPUT input, uint svInstanceId : SV_InstanceID)
     output.position = mul(float4(localPosition, 1.0f), WVP);
 	output.worldNormal = worldNormal;
 	output.worldTangent = worldTangent;
-	output.dirToLight = -LightDirection;
+    output.dirToLight = -DirectionalLightBuffer[lightIndex].LightDirection;
 	output.dirToView = normalize(ViewPosition - worldPosition);
 	output.texCoord = input.texCoord;
 
 	if (useShadow)
         output.positionNDC = mul(float4(localPosition, 1.0f), WVPLight);
 
-    output.materialIndex = iData.materialIndex;
+    //output.materialIndex = iData.materialIndex;
 	
 	return output;
 }
@@ -145,21 +166,22 @@ float4 PS(VS_OUTPUT input) : SV_Target
 		normal = mul(normalSampled, TBNW);
 	}
 
-    MaterialData md = MaterialBuffer[input.materialIndex];
+    MaterialData md = MaterialBuffer[materialIndex];
+    DirectionalLightData dl = DirectionalLightBuffer[lightIndex];
 	
-    float4 ambient = LightAmbient * md.MaterialAmbient;
+    float4 ambient = dl.LightAmbient * md.MaterialAmbient;
 	if (aoMapWeight != 0.0f)
 		ambient += aoMap.Sample(textureSampler, input.texCoord);
 
 	float diffuseIntensity = saturate(dot(dirToLight, normal));
-    float4 diffuse = diffuseIntensity * LightDiffuse * md.MaterialDiffuse;
+    float4 diffuse = diffuseIntensity * dl.LightDiffuse * md.MaterialDiffuse;
 
 	float3 halfAngle = normalize(dirToLight + dirToView);
 	float specularBase = saturate(dot(halfAngle, normal));
     float specularIntensity = pow(specularBase, md.MaterialPower);
-    float4 specular = specularIntensity * LightSpecular * md.MaterialSpecular;
+    float4 specular = specularIntensity * dl.LightSpecular * md.MaterialSpecular;
 
-	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+    float4 textureColor = textureArray.Sample(textureSampler, float3(input.texCoord, diffuseIndex));
 	float specularFactor = 1.0f;
 	if (specularMapWeight > 0.0f)
 		specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;

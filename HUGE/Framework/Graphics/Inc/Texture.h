@@ -26,7 +26,28 @@ namespace H::Graphics {
 		ID3D11ShaderResourceView* mShaderResourceView{ nullptr };
 	};
 
+	class TextureArray
+	{
+	public:
+		TextureArray() = default;
+		~TextureArray();
 
+		void Initialize();
+		void Terminate();
+
+		void PushBackTexture(const Texture& texture);
+
+		void BindPS(uint32_t slot = 0) const;
+
+		void BindVS(uint32_t slot = 0) const;
+
+		void UnBindPS(uint32_t slot = 0) const;
+
+		void UnBindVS(uint32_t slot = 0) const;
+
+	private:
+		std::vector<ID3D11ShaderResourceView*> mShaderResourceViews;
+	};
 
 
 

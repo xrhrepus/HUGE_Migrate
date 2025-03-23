@@ -52,3 +52,39 @@ void H::Graphics::Texture::UnBindVS(uint32_t slot) const
 	GetContext()->VSSetShaderResources(slot, 0, nullptr);
 }
 
+H::Graphics::TextureArray::~TextureArray()
+{
+}
+
+void H::Graphics::TextureArray::Initialize()
+{
+}
+
+void H::Graphics::TextureArray::Terminate()
+{
+}
+
+void H::Graphics::TextureArray::PushBackTexture(const Texture& texture)
+{
+	mShaderResourceViews.emplace_back(GetShaderResourceView(texture));
+}
+
+void H::Graphics::TextureArray::BindPS(uint32_t slot) const
+{
+	GetContext()->PSSetShaderResources(slot, mShaderResourceViews.size(), mShaderResourceViews.data());
+}
+
+void H::Graphics::TextureArray::BindVS(uint32_t slot) const
+{
+	GetContext()->VSSetShaderResources(slot, mShaderResourceViews.size(), mShaderResourceViews.data());
+}
+
+void H::Graphics::TextureArray::UnBindPS(uint32_t slot) const
+{
+	GetContext()->PSSetShaderResources(slot, 0, nullptr);
+}
+
+void H::Graphics::TextureArray::UnBindVS(uint32_t slot) const
+{
+	GetContext()->VSSetShaderResources(slot, 0, nullptr);
+}
