@@ -101,16 +101,20 @@ void TStarndardRenderPass::execute() {
 
         for (auto&& cmd : drawCmds)
         {
+            if (cmd.tf.empty())
+            {
+                continue;
+            }
             // transform index is same as instanceID
             // all same mesh and material, just draw with different transform
-            mTransformBuf.Set(*cmd.tf.data());
+            mTransformBuf.Set(*cmd.tf.data(), sizeof(cmd.tf[0]) * cmd.tf.size());
             mTransformBuf.BindVS(7);
             cmd.meshBuf->RenderInstanced(cmd.numOfInstance);
         }
     }
 }
 void TStarndardRenderPass::add(TStandardDrawCommand&& cmd) {
-    mTransformBuf.Set(*cmd.tf.data());
+    //mTransformBuf.Set(*cmd.tf.data());
     //mDrawRequests.emplace(cmd.mat, std::move(cmd));
     mDrawRequests[cmd.mat].emplace_back(std::move(cmd));
 }
@@ -138,6 +142,11 @@ void TSampleInstancedRendering::Init() {
     auto m = MeshBuilder::CreateCube(5, 5, 5, { 0.0f,0.0f,0.0f });
     mMeshRenderer.mMesh = m;
     mMeshRenderer.mMeshBuffer.Initialize(mMeshRenderer.mMesh);
+
+    auto m2 = MeshBuilder::CreateShpere(5, 5, { 0.0f,0.0f,0.0f });
+    mMeshRenderer2.mMesh = m2;
+    mMeshRenderer2.mMeshBuffer.Initialize(mMeshRenderer2.mMesh);
+
 
     mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
     mRenderPipeline.Init();
@@ -223,13 +232,15 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
             }
         }
         //===============
-        TStandardDrawCommand cmd;
-        cmd.mat = mMaterial2.get();
-        cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
-        cmd.numOfInstance = 7;
-        cmd.tf = std::move(tfs);
+        {
+            TStandardDrawCommand cmd;
+            cmd.mat = mMaterial.get();
+            cmd.meshBuf = &mMeshRenderer2.mMeshBuffer;
+            cmd.numOfInstance = 7;
+            cmd.tf = std::move(tfs);
 
-        standardPass->add(std::move(cmd));
+            standardPass->add(std::move(cmd));
+        }
     }
 
     mRenderPipeline.execute();

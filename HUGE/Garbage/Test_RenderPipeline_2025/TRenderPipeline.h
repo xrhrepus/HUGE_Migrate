@@ -105,7 +105,7 @@ public:
     void add(TStandardDrawCommand&& cmd);
 private:
     inline static const std::string RP_NAME = "TStarndardRenderPass";
-    H::Graphics::TypedStructuredBuffer<TransformData, 100> mTransformBuf;
+    H::Graphics::TypedDynamicStructuredBuffer<TransformData, 100> mTransformBuf;
     std::unordered_map<TIMaterial*, std::vector<TStandardDrawCommand>> mDrawRequests;
 
 };
@@ -141,6 +141,7 @@ struct TSampleInstancedRendering {
     std::unique_ptr<TStandardMaterial> mMaterial;
     std::unique_ptr<TStandardMaterial> mMaterial2;
     TMeshRenderer mMeshRenderer;
+    TMeshRenderer mMeshRenderer2;
 
     TextureId mDiffuseTex;
     TextureId mDiffuseTex2;
