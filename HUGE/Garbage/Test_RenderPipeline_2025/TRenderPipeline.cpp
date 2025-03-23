@@ -5,6 +5,7 @@ TShader::TShader(const std::filesystem::path& path) {
     mPs.Initialize(path.wstring().c_str(), "PS");
     sbm.Initialize();
     sbl.Initialize();
+    materialInstanceBuf.Initialize();
 }
 void TShader::Bind(ID3D11DeviceContext* context) const {
     mVs.Bind();
@@ -15,28 +16,26 @@ void TShader::Bind(ID3D11DeviceContext* context) const {
     // t9
     sbl.BindVS(9);
     sbl.BindPS(9);
-    // t10
-    difuseTextures.BindPS(10);
 }
 
-TRenderInstanceData TShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
-    TRenderInstanceData r;
+TMaterialInstanceData TShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
+    TMaterialInstanceData r;
     tempLight.emplace_back(dl);
     tempMat.emplace_back(mt);
-    tempTexture.emplace_back(texId);
+    diffuseTextures.emplace_back(texId);
     r.mLightIdx = tempLight.size() - 1;
     r.mMaterialIdx = tempMat.size() - 1;
-    r.mDiffuseMapIdx = tempTexture.size() - 1;
+    r.mDiffuseMapIdx = diffuseTextures.size() - 1;
     return r;
 }
 
 void TShader::batchMaterialData() {
     sbl.Set(*tempLight.data());
     sbm.Set(*tempMat.data());
-    for (auto&& tid : tempTexture)
+    /*for (auto&& tid : tempTexture)
     {
-        difuseTextures.PushBackTexture(*TextureManager::Get()->GetTexture(tid));
-    }
+        diffuseTextures.PushBackTexture(*TextureManager::Get()->GetTexture(tid));
+    }*/
 }
 TMaterial::TMaterial(TShader& shader, DirectionalLight dl, Material mt, TextureId texId)
     : mShader(shader)
@@ -45,11 +44,11 @@ TMaterial::TMaterial(TShader& shader, DirectionalLight dl, Material mt, TextureI
     mrid = shader.addMatToShader(dl, mt, texId);
 }
 void TMaterial::Bind(ID3D11DeviceContext* context) {
-
+    // if not using formal tex2DArray, let material bind the texture they are using
+    TextureManager::Get()->GetTexture(mShader.diffuseTextures[mrid.mDiffuseMapIdx])->BindPS(0);
 }
 void TRenderPass::Init() {
     // 
-    mRenderInstanceBuf.Initialize();
     mTransformBuf.Initialize();
 }
 void TRenderPass::execute() {
@@ -58,11 +57,14 @@ void TRenderPass::execute() {
     for (auto&& [mat, drawCmds] : mDrawRequests)
     {
         // vs,ps
+        // and data stored in structuredBuffer, this reduces context switching(reset buffer and bind)
         mat->mShader.Bind(context);
+        // other data that can't be stored together(i.e textures)
+        mat->Bind(context);
         // indices in shader of tex,color data used by this material 
-        mRenderInstanceBuf.Set(mat->mrid);
+        mat->mShader.materialInstanceBuf.Set(mat->mrid);
         // b10
-        mRenderInstanceBuf.BindPS(10);
+        mat->mShader.materialInstanceBuf.BindPS(10);
 
         for (auto&& cmd : drawCmds)
         {

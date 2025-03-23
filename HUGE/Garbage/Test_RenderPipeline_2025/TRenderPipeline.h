@@ -5,7 +5,7 @@
 
 using namespace H::Graphics;
 
-struct TRenderInstanceData {
+struct TMaterialInstanceData {
     UINT mLightIdx;
     UINT mMaterialIdx;
     UINT mDiffuseMapIdx;
@@ -17,9 +17,8 @@ public:
     TShader(const std::filesystem::path& path);
 
     void Bind(ID3D11DeviceContext* context) const;
-    TRenderInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
+    TMaterialInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
     void batchMaterialData();
-
 
     void ReflectConstantBuffers(ID3DBlob* shaderBlob);
     void ReflectResources(ID3DBlob* shaderBlob);
@@ -31,11 +30,15 @@ public:
 
     std::vector<DirectionalLight> tempLight;
     std::vector<Material> tempMat;
-    std::vector<TextureId> tempTexture;
 
     H::Graphics::TypedStructuredBuffer<DirectionalLight, MAX_INSTANCE_COUNT> sbl;
     H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
-    H::Graphics::TextureArray difuseTextures;
+
+    std::vector<TextureId> diffuseTextures;
+
+    H::Graphics::TypedConstantBuffer<TMaterialInstanceData> materialInstanceBuf;
+
+    //H::Graphics::TextureArray difuseTextures;
 };
 
 class TMaterial {
@@ -45,7 +48,7 @@ public:
     void Bind(ID3D11DeviceContext* context);
 
     const TShader& mShader;
-    TRenderInstanceData mrid;
+    TMaterialInstanceData mrid;
 
     DirectionalLight dl;
     Material mt;
@@ -131,7 +134,6 @@ public:
 
     void clear();
 
-    H::Graphics::TypedConstantBuffer<TRenderInstanceData> mRenderInstanceBuf;
     H::Graphics::TypedStructuredBuffer<TransformData, 100> mTransformBuf;
     std::unordered_map<TMaterial*, std::vector<TDrawCommand>> mDrawRequests;
 
