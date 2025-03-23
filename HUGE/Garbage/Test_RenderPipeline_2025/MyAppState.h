@@ -34,29 +34,6 @@ private:
 	Camera* mCurrentCam;
 	bool useLightCam = false;
 
-	TextureId mDiffuseMap;
-	TextureId mSpongeBob;
-
-	TextureId mSpecularMap;
-	TextureId mDisplacementMap;
-	TextureId mNormalMap;
-
-	TextureId mSkyboxTex;
-	TextureId mParticleTex;
-
-	H::Graphics::TypedConstantBuffer<TransformData[10]> tb;
-	H::Graphics::LightBuffer lb;
-	H::Graphics::TypedConstantBuffer<Material[10]> mb;
-
-	H::Graphics::TypedStructuredBuffer<TInstanceData,10> sbi;
-	H::Graphics::TypedStructuredBuffer<TransformData,10> sbt;
-	H::Graphics::TypedStructuredBuffer<Material, 10> sbm;
-
-	std::unique_ptr<TStandardShader> mShader;
-	std::unique_ptr<TStandardMaterial> mMaterial;
-	TMeshRenderer mMeshRenderer;
-	TStarndardRenderPass mRenderPass;
-
 	TSampleInstancedRendering mTInstanceDraw;
 };
 

@@ -26,8 +26,8 @@ void TStandardShader::Bind(ID3D11DeviceContext* context) const {
 
 }
 
-TMaterialInstanceData TStandardShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
-    TMaterialInstanceData r;
+TStandardMaterialInstanceData TStandardShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
+    TStandardMaterialInstanceData r;
     tempLight.emplace_back(dl);
     tempMat.emplace_back(mt);
     //diffuseTextures.emplace_back(texId);
@@ -125,6 +125,7 @@ const std::string& TStarndardRenderPass::getName() const
 void TSampleInstancedRendering::Init() {
     mDiffuseTex = TextureManager::Get()->LoadTexture("earth.jpg");
     mDiffuseTex2 = TextureManager::Get()->LoadTexture("fruit42_x10.png");
+
     mShader = std::make_unique<TStandardShader>();
     mShader->Init();
     mMaterial = std::make_unique<TStandardMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex);
@@ -133,10 +134,6 @@ void TSampleInstancedRendering::Init() {
     mMaterial2->Init();
 
     mShader->batchMaterialData();
-
-    sbt.Initialize();
-    sbm.Initialize();
-    sbi.Initialize();
 
     auto m = MeshBuilder::CreateCube(5, 5, 5, { 0.0f,0.0f,0.0f });
     mMeshRenderer.mMesh = m;
@@ -150,8 +147,6 @@ void TSampleInstancedRendering::Term() {
     mRenderPipeline.Term();
 }
 void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
-    //mRenderPass.clear();
-
 
     TStarndardRenderPass* standardPass = static_cast<TStarndardRenderPass*>(mRenderPipeline.getRP("TStarndardRenderPass"));
     if (!standardPass)

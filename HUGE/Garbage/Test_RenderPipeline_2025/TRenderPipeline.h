@@ -5,13 +5,6 @@
 
 using namespace H::Graphics;
 
-struct TMaterialInstanceData {
-    UINT mLightIdx;
-    UINT mMaterialIdx;
-    UINT mDiffuseMapIdx;
-    UINT padding;
-};
-
 class TIShader {
 public:
     virtual void Init() = 0;
@@ -19,12 +12,40 @@ public:
     virtual void Bind(ID3D11DeviceContext* context) const = 0;
 };
 
+class TIMaterial {
+public:
+    TIMaterial(TIShader& shader);
+    virtual void Init() = 0;
+    virtual void Term() = 0;
+    virtual void Bind(ID3D11DeviceContext* context) const = 0;
+    const TIShader& GetShader() const;
+
+protected:
+    const TIShader& mShader;
+};
+
+class TIRenderPass {
+public:
+    virtual void Init() = 0;
+    virtual void Term() = 0;
+    virtual void execute() = 0;
+    virtual void clear() = 0;
+    virtual const std::string& getName() const = 0;
+};
+
+struct TStandardMaterialInstanceData {
+    UINT mLightIdx;
+    UINT mMaterialIdx;
+    UINT mDiffuseMapIdx;
+    UINT padding;
+};
+
 class TStandardShader : public TIShader {
 public:
     void Init() override;
     void Term() override;
     void Bind(ID3D11DeviceContext* context) const override;
-    TMaterialInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
+    TStandardMaterialInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
     void batchMaterialData();
 
 private:
@@ -40,25 +61,7 @@ private:
 
     H::Graphics::TypedStructuredBuffer<DirectionalLight, MAX_INSTANCE_COUNT> mDirectionalLightsBuf;
     H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> mMaterialsBuf;
-
-    //std::vector<TextureId> diffuseTextures;
-
-
-    //H::Graphics::TextureArray difuseTextures;
 };
-
-class TIMaterial {
-public:
-    TIMaterial(TIShader& shader);
-    virtual void Init() = 0;
-    virtual void Term() = 0;
-    virtual void Bind(ID3D11DeviceContext* context) const = 0;
-    const TIShader& GetShader() const;
-
-protected:
-    const TIShader& mShader;
-};
-
 
 class TStandardMaterial : public TIMaterial {
 public:
@@ -70,72 +73,19 @@ public:
 
 private:
     const TStandardShader& mStandardShader;
-    TMaterialInstanceData mMaterialInstanceIdx;
+    TStandardMaterialInstanceData mMaterialInstanceIdx;
 
     DirectionalLight mDirectionalLight;
     Material mMaterial;
     TextureId mDiffuseTex;
 
-    H::Graphics::TypedConstantBuffer<TMaterialInstanceData> materialInstanceBuf;
+    H::Graphics::TypedConstantBuffer<TStandardMaterialInstanceData> materialInstanceBuf;
 
-};
-
-/// <summary>
-/// Vertex with additional instanceID to support batch rendering. Later moved to Graphics lib.
-/// </summary>
-struct VertexInstanced
-{
-    // todo: update VE and GetVertexLayout to support uint
-    VERTEX_FORMAT(VE_Position | VE_Normal | VE_Tangent | VE_TexCoord);
-
-    Vector3 position;
-    Vector3 normal;
-    Vector3 tangent;
-    Vector2 texCoord;
-    UINT instanceID;
-
-    void fromVertex(const H::Graphics::Vertex& vtx) {
-        position = vtx.position;
-        normal = vtx.normal;
-        tangent = vtx.tangent;
-        texCoord = vtx.texCoord;
-    }
-};
-using MeshInstanced = H::Graphics::MeshBase<VertexInstanced>;
-
-
-/// <summary>
-/// Contains other data like transform. Send these and Material data to correct RenderPass.  Also handle optimization like batch rendering
-/// </summary>
-class TMeshRenderer {
-public:
-    //MeshInstanced mMesh;
-    H::Graphics::Mesh mMesh;
-    H::Graphics::MeshBuffer mMeshBuffer;
-};
-
-
-/// <summary>
-/// Produced from TMeshRenderer
-/// </summary>
-struct TRenderContext {
-public:
-    TStandardMaterial& mat;
-    H::Graphics::MeshBuffer& meshBuffer;
-    // other data like transform
-};
-
-
-struct TInstanceData {
-    UINT mTransformIdx;
-    UINT mLightIdx;
-    UINT mMaterialIdx;
-    UINT mDiffuseMapIdx;
 };
 
 /// <summary>
 /// no interface, specific to each pass
-/// You will need to get specific Pass to add command anyways
+/// you will need to get specific Pass to add command anyways
 /// </summary>
 struct TStandardDrawCommand {
     TIMaterial* mat;
@@ -143,16 +93,6 @@ struct TStandardDrawCommand {
     uint32_t numOfInstance;
     std::vector<H::Graphics::TransformData> tf;
 };
-
-class TIRenderPass {
-public:
-    virtual void Init() = 0;
-    virtual void Term() = 0;
-    virtual void execute() = 0;
-    virtual void clear() = 0;
-    virtual const std::string& getName() const = 0;
-};
-
 
 class TStarndardRenderPass : public TIRenderPass {
 public:
@@ -186,12 +126,17 @@ public:
     std::unordered_map<std::string, ID3D11ShaderResourceView*> mRPOutput;
 };
 
+class TMeshRenderer {
+public:
+    //MeshInstanced mMesh;
+    H::Graphics::Mesh mMesh;
+    H::Graphics::MeshBuffer mMeshBuffer;
+};
+
 /// <summary>
 /// Draw 1 mesh with different data N times in 1 call
 /// </summary>
 struct TSampleInstancedRendering {
-    static const size_t MAX_INSTANCE_COUNT = 10;
-
     std::unique_ptr<TStandardShader> mShader;
     std::unique_ptr<TStandardMaterial> mMaterial;
     std::unique_ptr<TStandardMaterial> mMaterial2;
@@ -199,18 +144,34 @@ struct TSampleInstancedRendering {
 
     TextureId mDiffuseTex;
     TextureId mDiffuseTex2;
-   // H::Graphics::LightBuffer lb;
-
-    H::Graphics::TypedStructuredBuffer<TInstanceData, MAX_INSTANCE_COUNT> sbi;
-    H::Graphics::TypedStructuredBuffer<TransformData, MAX_INSTANCE_COUNT> sbt;
-    H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
 
     TRenderPipeline mRenderPipeline;
-    //TStarndardRenderPass mRenderPass;
 
     void Init();
     void Term();
     void DrawWithRenderPass(const Camera& cam);
-
-    void Draw(const Camera& cam);
 };
+
+
+/// <summary>
+/// Vertex with additional instanceID to support batch rendering. Later moved to Graphics lib.
+/// </summary>
+struct VertexInstanced
+{
+    // todo: update VE and GetVertexLayout to support uint
+    VERTEX_FORMAT(VE_Position | VE_Normal | VE_Tangent | VE_TexCoord);
+
+    Vector3 position;
+    Vector3 normal;
+    Vector3 tangent;
+    Vector2 texCoord;
+    UINT instanceID;
+
+    void fromVertex(const H::Graphics::Vertex& vtx) {
+        position = vtx.position;
+        normal = vtx.normal;
+        tangent = vtx.tangent;
+        texCoord = vtx.texCoord;
+    }
+};
+using MeshInstanced = H::Graphics::MeshBase<VertexInstanced>;
