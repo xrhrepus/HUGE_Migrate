@@ -8,6 +8,7 @@ using namespace H::Math;
 H::Graphics::StructuredBuffer::~StructuredBuffer()
 {
 	ASSERT(mShaderResourceView == nullptr, "[StructuredBuffer] buffer not released ");
+	ASSERT(mStructuredBuffer == nullptr, "[StructuredBuffer] buffer not released ");
 }
 
 void StructuredBuffer::Initialize(uint32_t typeSize, uint32_t numberOfElements, const void* initData)
