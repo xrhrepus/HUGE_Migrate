@@ -12,16 +12,23 @@ struct TMaterialInstanceData {
     UINT padding;
 };
 
-class TShader {
+class TIShader {
 public:
-    TShader(const std::filesystem::path& path);
+    virtual void Init() = 0;
+    virtual void Term() = 0;
+    virtual void Bind(ID3D11DeviceContext* context) const = 0;
+};
 
-    void Bind(ID3D11DeviceContext* context) const;
+class TStandardShader : public TIShader {
+public:
+    void Init() override;
+    void Term() override;
+    void Bind(ID3D11DeviceContext* context) const override;
     TMaterialInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
     void batchMaterialData();
 
-    void ReflectConstantBuffers(ID3DBlob* shaderBlob);
-    void ReflectResources(ID3DBlob* shaderBlob);
+private:
+    const std::filesystem::path STANDARD_INSTANCED_FILE_PATH = L"../../Assets/Shaders/StandardInstanced.fx";
 
 	VertexShader mVs;
 	PixelShader mPs;
@@ -31,28 +38,46 @@ public:
     std::vector<DirectionalLight> tempLight;
     std::vector<Material> tempMat;
 
-    H::Graphics::TypedStructuredBuffer<DirectionalLight, MAX_INSTANCE_COUNT> sbl;
-    H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
+    H::Graphics::TypedStructuredBuffer<DirectionalLight, MAX_INSTANCE_COUNT> mDirectionalLightsBuf;
+    H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> mMaterialsBuf;
 
-    std::vector<TextureId> diffuseTextures;
+    //std::vector<TextureId> diffuseTextures;
 
-    H::Graphics::TypedConstantBuffer<TMaterialInstanceData> materialInstanceBuf;
 
     //H::Graphics::TextureArray difuseTextures;
 };
 
-class TMaterial {
+class TIMaterial {
 public:
-    TMaterial(TShader& shader, DirectionalLight dl, Material mt, TextureId texId);
+    TIMaterial(TIShader& shader);
+    virtual void Init() = 0;
+    virtual void Term() = 0;
+    virtual void Bind(ID3D11DeviceContext* context) const = 0;
+    const TIShader& GetShader() const;
 
-    void Bind(ID3D11DeviceContext* context);
+protected:
+    const TIShader& mShader;
+};
 
-    const TShader& mShader;
-    TMaterialInstanceData mrid;
 
-    DirectionalLight dl;
-    Material mt;
-    TextureId diffuseTex;
+class TStandardMaterial : public TIMaterial {
+public:
+    TStandardMaterial(TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId);
+    void Init() override;
+    void Term() override;
+
+    void Bind(ID3D11DeviceContext* context) const;
+
+private:
+    const TStandardShader& mStandardShader;
+    TMaterialInstanceData mMaterialInstanceIdx;
+
+    DirectionalLight mDirectionalLight;
+    Material mMaterial;
+    TextureId mDiffuseTex;
+
+    H::Graphics::TypedConstantBuffer<TMaterialInstanceData> materialInstanceBuf;
+
 };
 
 /// <summary>
@@ -95,7 +120,7 @@ public:
 /// </summary>
 struct TRenderContext {
 public:
-    TMaterial& mat;
+    TStandardMaterial& mat;
     H::Graphics::MeshBuffer& meshBuffer;
     // other data like transform
 };
@@ -108,34 +133,40 @@ struct TInstanceData {
     UINT mDiffuseMapIdx;
 };
 
-struct TDrawCommand {
-    TMaterial* mat;
+/// <summary>
+/// no interface, specific to each pass
+/// You will need to get specific Pass to add command anyways
+/// </summary>
+struct TStandardDrawCommand {
+    TIMaterial* mat;
     H::Graphics::MeshBuffer* meshBuf;
     uint32_t numOfInstance;
     std::vector<H::Graphics::TransformData> tf;
 };
 
-
-/// <summary>
-/// Interface. Each can have optional multiple input and 1 optional output RT. Inout are stored in Pipeline. 
-/// Each pass handles 1 Shader to reduce bind cost
-/// </summary>
-class TRenderPass {
+class TIRenderPass {
 public:
+    virtual void Init() = 0;
+    virtual void Term() = 0;
+    virtual void execute() = 0;
+    virtual void clear() = 0;
+    virtual const std::string& getName() const = 0;
+};
 
-    void Init();
 
-    void Term();
+class TStarndardRenderPass : public TIRenderPass {
+public:
+    void Init() override;
+    void Term() override;
+    void execute() override;
+    void clear() override;
+    const std::string& getName() const override;
 
-    // make these pure v
-    void execute();
-
-    void add(TDrawCommand&& cmd);
-
-    void clear();
-
+    void add(TStandardDrawCommand&& cmd);
+private:
+    inline static const std::string RP_NAME = "TStarndardRenderPass";
     H::Graphics::TypedStructuredBuffer<TransformData, 100> mTransformBuf;
-    std::unordered_map<TMaterial*, std::vector<TDrawCommand>> mDrawRequests;
+    std::unordered_map<TIMaterial*, std::vector<TStandardDrawCommand>> mDrawRequests;
 
 };
 
@@ -144,7 +175,14 @@ public:
 /// </summary>
 class TRenderPipeline {
 public:
-    std::vector<TRenderPass*> mRPs;
+    void Init();
+    void Term();
+    void execute();
+    void add(std::unique_ptr<TIRenderPass>&& rp);
+    const TIRenderPass* getRP(const std::string& name) const;
+    TIRenderPass* getRP(const std::string& name);
+
+    std::unordered_map<std::string, std::unique_ptr<TIRenderPass>> mRPs;
     std::unordered_map<std::string, ID3D11ShaderResourceView*> mRPOutput;
 };
 
@@ -154,9 +192,9 @@ public:
 struct TSampleInstancedRendering {
     static const size_t MAX_INSTANCE_COUNT = 10;
 
-    std::unique_ptr<TShader> mShader;
-    std::unique_ptr<TMaterial> mMaterial;
-    std::unique_ptr<TMaterial> mMaterial2;
+    std::unique_ptr<TStandardShader> mShader;
+    std::unique_ptr<TStandardMaterial> mMaterial;
+    std::unique_ptr<TStandardMaterial> mMaterial2;
     TMeshRenderer mMeshRenderer;
 
     TextureId mDiffuseTex;
@@ -167,7 +205,8 @@ struct TSampleInstancedRendering {
     H::Graphics::TypedStructuredBuffer<TransformData, MAX_INSTANCE_COUNT> sbt;
     H::Graphics::TypedStructuredBuffer<Material, MAX_INSTANCE_COUNT> sbm;
 
-    TRenderPass mRenderPass;
+    TRenderPipeline mRenderPipeline;
+    //TStarndardRenderPass mRenderPass;
 
     void Init();
     void Term();

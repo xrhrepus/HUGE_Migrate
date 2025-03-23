@@ -32,7 +32,6 @@ void H::Graphics::Texture::Terminate()
 void H::Graphics::Texture::BindPS(uint32_t slot) const
 {
 	 GetContext()->PSSetShaderResources(slot, 1, &mShaderResourceView);
-
 }
 
 void H::Graphics::Texture::BindVS(uint32_t slot) const
@@ -53,10 +52,6 @@ void H::Graphics::Texture::UnBindVS(uint32_t slot) const
 }
 
 H::Graphics::TextureArray::~TextureArray()
-{
-}
-
-void H::Graphics::TextureArray::Initialize()
 {
 }
 

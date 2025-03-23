@@ -52,10 +52,10 @@ private:
 	H::Graphics::TypedStructuredBuffer<TransformData,10> sbt;
 	H::Graphics::TypedStructuredBuffer<Material, 10> sbm;
 
-	std::unique_ptr<TShader> mShader;
-	std::unique_ptr<TMaterial> mMaterial;
+	std::unique_ptr<TStandardShader> mShader;
+	std::unique_ptr<TStandardMaterial> mMaterial;
 	TMeshRenderer mMeshRenderer;
-	TRenderPass mRenderPass;
+	TStarndardRenderPass mRenderPass;
 
 	TSampleInstancedRendering mTInstanceDraw;
 };

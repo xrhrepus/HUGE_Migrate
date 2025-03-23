@@ -26,7 +26,7 @@ void MyAppState::Initialize()
 
 	// These should be from some component ?
 
-	mShader = std::make_unique<TShader>(STANDARD_INSTANCED_FILE_PATH);
+	//mShader = std::make_unique<TStandardShader>(STANDARD_INSTANCED_FILE_PATH);
 	//mMaterial = std::make_unique<TMaterial>(*mShader);
 
 

@@ -1,70 +1,103 @@
 #include "TRenderPipeline.h"
 
-TShader::TShader(const std::filesystem::path& path) {
-    mVs.Initialize(path.wstring().c_str());
-    mPs.Initialize(path.wstring().c_str(), "PS");
-    sbm.Initialize();
-    sbl.Initialize();
-    materialInstanceBuf.Initialize();
+void TStandardShader::Init()
+{
+    mVs.Initialize(STANDARD_INSTANCED_FILE_PATH.wstring().c_str());
+    mPs.Initialize(STANDARD_INSTANCED_FILE_PATH.wstring().c_str(), "PS");
+    mMaterialsBuf.Initialize();
+    mDirectionalLightsBuf.Initialize();
 }
-void TShader::Bind(ID3D11DeviceContext* context) const {
+void TStandardShader::Term()
+{
+    mMaterialsBuf.Terminate();
+    mDirectionalLightsBuf.Terminate();
+    mVs.Terminate();
+    mPs.Terminate();
+}
+void TStandardShader::Bind(ID3D11DeviceContext* context) const {
     mVs.Bind();
     mPs.Bind();
 
     // t8
-    sbm.BindPS(8);
+    mMaterialsBuf.BindPS(8);
     // t9
-    sbl.BindVS(9);
-    sbl.BindPS(9);
+    mDirectionalLightsBuf.BindVS(9);
+    mDirectionalLightsBuf.BindPS(9);
+
 }
 
-TMaterialInstanceData TShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
+TMaterialInstanceData TStandardShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
     TMaterialInstanceData r;
     tempLight.emplace_back(dl);
     tempMat.emplace_back(mt);
-    diffuseTextures.emplace_back(texId);
+    //diffuseTextures.emplace_back(texId);
     r.mLightIdx = tempLight.size() - 1;
     r.mMaterialIdx = tempMat.size() - 1;
-    r.mDiffuseMapIdx = diffuseTextures.size() - 1;
+    //r.mDiffuseMapIdx = diffuseTextures.size() - 1;
     return r;
 }
 
-void TShader::batchMaterialData() {
-    sbl.Set(*tempLight.data());
-    sbm.Set(*tempMat.data());
-    /*for (auto&& tid : tempTexture)
-    {
-        diffuseTextures.PushBackTexture(*TextureManager::Get()->GetTexture(tid));
-    }*/
+void TStandardShader::batchMaterialData() {
+    mDirectionalLightsBuf.Set(*tempLight.data());
+    mMaterialsBuf.Set(*tempMat.data());
 }
-TMaterial::TMaterial(TShader& shader, DirectionalLight dl, Material mt, TextureId texId)
-    : mShader(shader)
-    // member assign
+
+TIMaterial::TIMaterial(TIShader& shader) 
+    : mShader(shader) {
+}
+
+const TIShader& TIMaterial::GetShader() const
 {
-    mrid = shader.addMatToShader(dl, mt, texId);
+    return mShader;
 }
-void TMaterial::Bind(ID3D11DeviceContext* context) {
+
+
+
+TStandardMaterial::TStandardMaterial(TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId)
+    : TIMaterial(shader)
+    , mStandardShader(shader)
+    , mDirectionalLight(dl)
+    , mMaterial(mt)
+    , mDiffuseTex(texId)
+{
+    mMaterialInstanceIdx = shader.addMatToShader(dl, mt, texId);
+}
+
+void TStandardMaterial::Init() {
+    materialInstanceBuf.Initialize();
+ }
+void TStandardMaterial::Term() {
+    materialInstanceBuf.Terminate();
+}
+
+void TStandardMaterial::Bind(ID3D11DeviceContext* context) const {
     // if not using formal tex2DArray, let material bind the texture they are using
-    TextureManager::Get()->GetTexture(mShader.diffuseTextures[mrid.mDiffuseMapIdx])->BindPS(0);
+    TextureManager::Get()->GetTexture(mDiffuseTex)->BindPS(0);
+
+    materialInstanceBuf.Set(mMaterialInstanceIdx);
+    // b10
+    materialInstanceBuf.BindPS(10);
+
 }
-void TRenderPass::Init() {
+
+void TStarndardRenderPass::Init() {
     // 
     mTransformBuf.Initialize();
 }
-void TRenderPass::execute() {
+void TStarndardRenderPass::Term()
+{
+    mTransformBuf.Terminate();
+}
+void TStarndardRenderPass::execute() {
     DepthStencilManager::Get()->GetDepthStencilState("ZTest")->Set();
     auto context = GetContext();
     for (auto&& [mat, drawCmds] : mDrawRequests)
     {
         // vs,ps
         // and data stored in structuredBuffer, this reduces context switching(reset buffer and bind)
-        mat->mShader.Bind(context);
-        // other data that can't be stored together(i.e textures)
+        mat->GetShader().Bind(context);
+        // other data that can't be stored together(i.e textures, this material's renderinstanceIdx)
         mat->Bind(context);
-        // indices in shader of tex,color data used by this material 
-        mat->mShader.materialInstanceBuf.Set(mat->mrid);
-        // b10
-        mat->mShader.materialInstanceBuf.BindPS(10);
 
         for (auto&& cmd : drawCmds)
         {
@@ -76,23 +109,28 @@ void TRenderPass::execute() {
         }
     }
 }
-void TRenderPass::add(TDrawCommand&& cmd) {
+void TStarndardRenderPass::add(TStandardDrawCommand&& cmd) {
     mTransformBuf.Set(*cmd.tf.data());
     //mDrawRequests.emplace(cmd.mat, std::move(cmd));
     mDrawRequests[cmd.mat].emplace_back(std::move(cmd));
 }
 
-void TRenderPass::clear() {
+void TStarndardRenderPass::clear() {
     mDrawRequests.clear();
 }
+const std::string& TStarndardRenderPass::getName() const
+{
+    return RP_NAME;
+}
 void TSampleInstancedRendering::Init() {
-    const wchar_t* STANDARD_INSTANCED_FILE_PATH = L"../../Assets/Shaders/StandardInstanced.fx";
-
     mDiffuseTex = TextureManager::Get()->LoadTexture("earth.jpg");
     mDiffuseTex2 = TextureManager::Get()->LoadTexture("fruit42_x10.png");
-    mShader = std::make_unique<TShader>(STANDARD_INSTANCED_FILE_PATH);
-    mMaterial = std::make_unique<TMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex);
-    mMaterial2 = std::make_unique<TMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex2);
+    mShader = std::make_unique<TStandardShader>();
+    mShader->Init();
+    mMaterial = std::make_unique<TStandardMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex);
+    mMaterial->Init();
+    mMaterial2 = std::make_unique<TStandardMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex2);
+    mMaterial2->Init();
 
     mShader->batchMaterialData();
 
@@ -104,14 +142,22 @@ void TSampleInstancedRendering::Init() {
     mMeshRenderer.mMesh = m;
     mMeshRenderer.mMeshBuffer.Initialize(mMeshRenderer.mMesh);
 
-    mRenderPass.Init();
+    mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
+    mRenderPipeline.Init();
 
 }
 void TSampleInstancedRendering::Term() {
+    mRenderPipeline.Term();
 }
 void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
-    mRenderPass.clear();
+    //mRenderPass.clear();
 
+
+    TStarndardRenderPass* standardPass = static_cast<TStarndardRenderPass*>(mRenderPipeline.getRP("TStarndardRenderPass"));
+    if (!standardPass)
+    {
+        return;
+    }
     {
         std::vector<TransformData> tfs;
         //===============
@@ -143,13 +189,13 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
             }
         }
         //===============
-        TDrawCommand cmd;
+        TStandardDrawCommand cmd;
         cmd.mat = mMaterial.get();
         cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         cmd.numOfInstance = 5;
         cmd.tf = std::move(tfs);
 
-        mRenderPass.add(std::move(cmd));
+        standardPass->add(std::move(cmd));
     }
     {
         std::vector<TransformData> tfs;
@@ -182,16 +228,62 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
             }
         }
         //===============
-        TDrawCommand cmd;
+        TStandardDrawCommand cmd;
         cmd.mat = mMaterial2.get();
         cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         cmd.numOfInstance = 7;
         cmd.tf = std::move(tfs);
 
-        mRenderPass.add(std::move(cmd));
+        standardPass->add(std::move(cmd));
     }
 
-    mRenderPass.execute();
+    mRenderPipeline.execute();
 }
 
+void TRenderPipeline::Init()
+{
+    for (auto&& [name, rp] : mRPs)
+    {
+        rp->Init();
+    }
+}
 
+void TRenderPipeline::Term()
+{
+    for (auto&& [name, rp] : mRPs)
+    {
+        rp->Term();
+    }
+}
+
+void TRenderPipeline::execute()
+{
+    for (auto&& [name, rp] : mRPs)
+    {
+        rp->execute();
+        rp->clear();
+    }
+}
+
+void TRenderPipeline::add(std::unique_ptr<TIRenderPass>&& rp)
+{
+    mRPs[rp->getName()] = std::move(rp);
+}
+
+const TIRenderPass* TRenderPipeline::getRP(const std::string& name) const
+{
+    if (auto it = mRPs.find(name); it != mRPs.end())
+    {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
+TIRenderPass* TRenderPipeline::getRP(const std::string& name)
+{
+    if (auto it = mRPs.find(name); it != mRPs.end())
+    {
+        return it->second.get();
+    }
+    return nullptr;
+}
