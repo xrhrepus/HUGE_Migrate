@@ -9,6 +9,18 @@ H::Graphics::ConstantBuffer::~ConstantBuffer()
 {
 	ASSERT(mConstantBuffer == nullptr, "[ConstantBuffer] buffer not released ");
 }
+ConstantBuffer::ConstantBuffer(ConstantBuffer&& rhs)
+	:mConstantBuffer(rhs.mConstantBuffer)
+{
+	 rhs.mConstantBuffer = nullptr;
+}
+
+ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer&& rhs) {
+	rhs.mConstantBuffer = mConstantBuffer;
+	mConstantBuffer = nullptr;
+	return *this;
+}
+
 
 void ConstantBuffer::Initialize(uint32_t buffersize, const void* initData)
 {

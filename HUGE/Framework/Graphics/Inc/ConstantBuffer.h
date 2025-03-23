@@ -8,7 +8,12 @@ namespace Graphics {
 	{
 	public:
 		ConstantBuffer() = default;
+		ConstantBuffer(ConstantBuffer&& rhs);
+		ConstantBuffer(const ConstantBuffer& rhs) = delete;
 		~ConstantBuffer();
+
+		ConstantBuffer& operator=(const ConstantBuffer& rhs) = delete;
+		ConstantBuffer& operator=(ConstantBuffer&& rhs);
 
 		void Initialize(uint32_t buffersize, const void* initData = nullptr);
 		void Terminate();
