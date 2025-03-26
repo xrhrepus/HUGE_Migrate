@@ -109,9 +109,14 @@ public:
 
     void add(TStandardDrawCommand&& cmd);
 private:
+    struct CompareByName {
+        bool operator()(TIMaterial* a, TIMaterial* b) const {
+            return a->getName() < b->getName();
+        }
+    };
     inline static const std::string RP_NAME = "TStarndardRenderPass";
     H::Graphics::TypedDynamicStructuredBuffer<TransformData, 100> mTransformBuf;
-    std::unordered_map<TIMaterial*, std::vector<TStandardDrawCommand>> mDrawRequests;
+    std::map<TIMaterial*, std::vector<TStandardDrawCommand>, CompareByName> mDrawRequests;
 
 };
 

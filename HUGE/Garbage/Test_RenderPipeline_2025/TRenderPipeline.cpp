@@ -100,14 +100,27 @@ void TStarndardRenderPass::Term()
 {
     mTransformBuf.Terminate();
 }
+
 void TStarndardRenderPass::execute() {
     DepthStencilManager::Get()->GetDepthStencilState("ZTest")->Set();
     auto context = GetContext();
+    const TIShader* lastShader = nullptr;
+
+    // some buffers required in the pass
+    // only bind once and update data below
+    mTransformBuf.BindVS(7);
+
     for (auto&& [mat, drawCmds] : mDrawRequests)
     {
-        // vs,ps
-        // and data stored in structuredBuffer, this reduces context switching(reset buffer and bind)
-        mat->GetShader().Bind(context);
+        // reduce shader bound
+        if (&mat->GetShader() != lastShader)
+        {
+            lastShader = &mat->GetShader();
+            // vs,ps
+            // and data stored in structuredBuffer, this reduces context switching(reset buffer and bind)
+            mat->GetShader().Bind(context);
+        }
+
         // other data that can't be stored together(i.e textures, this material's renderinstanceIdx)
         mat->Bind(context);
 
@@ -120,7 +133,6 @@ void TStarndardRenderPass::execute() {
             // transform index is same as instanceID
             // all same mesh and material, just draw with different transform
             mTransformBuf.Set(*cmd.tf.data(), sizeof(cmd.tf[0]) * cmd.tf.size());
-            mTransformBuf.BindVS(7);
             cmd.meshBuf->RenderInstanced(cmd.numOfInstance);
         }
     }
@@ -206,7 +218,7 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
         }
         //===============
         TStandardDrawCommand cmd;
-        cmd.mat = mMaterial.get();
+        cmd.mat = mMaterial2.get();
         cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         cmd.numOfInstance = 5;
         cmd.tf = std::move(tfs);
