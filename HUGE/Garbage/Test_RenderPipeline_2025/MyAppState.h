@@ -1,7 +1,7 @@
 #pragma once
 #include <HUGE\Inc\AppState.h>
 #include <HUGE\Inc\HUGE.h>
-#include "TRenderPipeline.h"
+#include "ExampleRenderPass.h"
 
 using namespace H;
 using namespace H::Graphics;

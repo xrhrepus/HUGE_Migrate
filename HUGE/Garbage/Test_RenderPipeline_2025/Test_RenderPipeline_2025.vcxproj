@@ -135,12 +135,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ExampleRenderPass.h" />
     <ClInclude Include="MyAppState.h" />
+    <ClInclude Include="TMeshRenderer.h" />
     <ClInclude Include="TRenderPipeline.h" />
+    <ClInclude Include="TRenderPipelineInterface.h" />
+    <ClInclude Include="TStandardRenderPass.h" />
+    <ClInclude Include="TStandardShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ExampleRenderPass.cpp" />
     <ClCompile Include="MyAppState.cpp" />
     <ClCompile Include="TRenderPipeline.cpp" />
+    <ClCompile Include="TRenderPipelineInterface.cpp" />
+    <ClCompile Include="TStandardRenderPass.cpp" />
+    <ClCompile Include="TStandardShader.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
