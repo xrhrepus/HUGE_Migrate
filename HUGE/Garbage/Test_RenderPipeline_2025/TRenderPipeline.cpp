@@ -35,10 +35,8 @@ TStandardMaterialInstanceData TStandardShader::addMatToShader(DirectionalLight& 
     TStandardMaterialInstanceData r;
     tempLight.emplace_back(dl);
     tempMat.emplace_back(mt);
-    //diffuseTextures.emplace_back(texId);
     r.mLightIdx = tempLight.size() - 1;
     r.mMaterialIdx = tempMat.size() - 1;
-    //r.mDiffuseMapIdx = diffuseTextures.size() - 1;
     return r;
 }
 
@@ -72,12 +70,16 @@ TStandardMaterial::TStandardMaterial(const std::string& name, TStandardShader& s
     , mMaterial(mt)
     , mDiffuseTex(texId)
 {
+    // data that can be stored in an array are stored in Shader
+    // each material instance keeps indices of those data
     mMaterialInstanceIdx = shader.addMatToShader(dl, mt, texId);
 }
 
 void TStandardMaterial::Init() {
     materialInstanceBuf.Initialize();
- }
+    // These type of data won't change. Only set it once
+    materialInstanceBuf.Set(mMaterialInstanceIdx);
+}
 void TStandardMaterial::Term() {
     materialInstanceBuf.Terminate();
 }
@@ -86,10 +88,10 @@ void TStandardMaterial::Bind(ID3D11DeviceContext* context) const {
     // if not using formal tex2DArray, let material bind the texture they are using
     TextureManager::Get()->GetTexture(mDiffuseTex)->BindPS(0);
 
-    materialInstanceBuf.Set(mMaterialInstanceIdx);
     // b10
+    // this buffer is exclusive to each material instance 
+    // so it has to be re-bound for each material
     materialInstanceBuf.BindPS(10);
-
 }
 
 void TStarndardRenderPass::Init() {
@@ -138,8 +140,6 @@ void TStarndardRenderPass::execute() {
     }
 }
 void TStarndardRenderPass::add(TStandardDrawCommand&& cmd) {
-    //mTransformBuf.Set(*cmd.tf.data());
-    //mDrawRequests.emplace(cmd.mat, std::move(cmd));
     mDrawRequests[cmd.mat].emplace_back(std::move(cmd));
 }
 
