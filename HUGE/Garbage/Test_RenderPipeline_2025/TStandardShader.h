@@ -53,14 +53,3 @@ private:
 
 };
 
-/// <summary>
-/// no interface, specific to each pass
-/// you will need to get specific Pass to add command anyways
-/// </summary>
-struct TStandardDrawCommand {
-    TIMaterial* mat;
-    H::Graphics::MeshBuffer* meshBuf;
-    uint32_t numOfInstance;
-    std::vector<H::Graphics::TransformData> tf;
-};
-
