@@ -10,17 +10,20 @@ public:
     virtual void Init() = 0;
     virtual void Term() = 0;
     virtual void Bind(ID3D11DeviceContext* context) const = 0;
+    virtual const std::string& getName() const = 0;
 };
 
 class TIMaterial {
 public:
-    TIMaterial(TIShader& shader);
+    TIMaterial(const std::string& name, TIShader& shader);
     virtual void Init() = 0;
     virtual void Term() = 0;
     virtual void Bind(ID3D11DeviceContext* context) const = 0;
     const TIShader& GetShader() const;
+    const std::string& getName() const;
 
 protected:
+    const std::string mName;
     const TIShader& mShader;
 };
 
@@ -45,10 +48,12 @@ public:
     void Init() override;
     void Term() override;
     void Bind(ID3D11DeviceContext* context) const override;
+    const std::string& getName() const override;
     TStandardMaterialInstanceData addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId);
     void batchMaterialData();
 
 private:
+    inline static std::string M_NAME = "StandardShader";
     const std::filesystem::path STANDARD_INSTANCED_FILE_PATH = L"../../Assets/Shaders/StandardInstanced.fx";
 
 	VertexShader mVs;
@@ -65,7 +70,7 @@ private:
 
 class TStandardMaterial : public TIMaterial {
 public:
-    TStandardMaterial(TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId);
+    TStandardMaterial(const std::string& name, TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId);
     void Init() override;
     void Term() override;
 

@@ -26,6 +26,11 @@ void TStandardShader::Bind(ID3D11DeviceContext* context) const {
 
 }
 
+const std::string& TStandardShader::getName() const
+{
+    return M_NAME;
+}
+
 TStandardMaterialInstanceData TStandardShader::addMatToShader(DirectionalLight& dl, Material& mt, TextureId texId) {
     TStandardMaterialInstanceData r;
     tempLight.emplace_back(dl);
@@ -42,8 +47,10 @@ void TStandardShader::batchMaterialData() {
     mMaterialsBuf.Set(*tempMat.data());
 }
 
-TIMaterial::TIMaterial(TIShader& shader) 
-    : mShader(shader) {
+TIMaterial::TIMaterial(const std::string& name, TIShader& shader)
+    : mName(name)
+    , mShader(shader)
+{
 }
 
 const TIShader& TIMaterial::GetShader() const
@@ -51,10 +58,15 @@ const TIShader& TIMaterial::GetShader() const
     return mShader;
 }
 
+const std::string& TIMaterial::getName() const
+{
+    return mName;
+}
 
 
-TStandardMaterial::TStandardMaterial(TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId)
-    : TIMaterial(shader)
+
+TStandardMaterial::TStandardMaterial(const std::string& name, TStandardShader& shader, DirectionalLight dl, Material mt, TextureId texId)
+    : TIMaterial(name, shader)
     , mStandardShader(shader)
     , mDirectionalLight(dl)
     , mMaterial(mt)
@@ -132,9 +144,9 @@ void TSampleInstancedRendering::Init() {
 
     mShader = std::make_unique<TStandardShader>();
     mShader->Init();
-    mMaterial = std::make_unique<TStandardMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex);
+    mMaterial = std::make_unique<TStandardMaterial>("stdmat1", * mShader, DirectionalLight{}, Material{}, mDiffuseTex);
     mMaterial->Init();
-    mMaterial2 = std::make_unique<TStandardMaterial>(*mShader, DirectionalLight{}, Material{}, mDiffuseTex2);
+    mMaterial2 = std::make_unique<TStandardMaterial>("stdmat2", *mShader, DirectionalLight{}, Material{}, mDiffuseTex2);
     mMaterial2->Init();
 
     mShader->batchMaterialData();
