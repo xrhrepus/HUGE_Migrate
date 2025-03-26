@@ -1,14 +1,15 @@
-// Description: Standard shader for PCEngine.
+// Description: Standard shader supports instanced rendering
 
-struct InstanceData
+// indices in structured buffer of each different materials
+cbuffer RenderInstanceData : register(b10)
 {
-    int transformIndex;
     int lightIndex;
     int materialIndex;
     int diffuseIndex;
+    int padding;
 };
-StructuredBuffer<InstanceData> instanceBuffer : register(t6);
 
+// each mesh is drawn instanced, INSTANCE_ID is the index
 struct TransformData
 {
     matrix World;
@@ -18,47 +19,7 @@ struct TransformData
 };
 StructuredBuffer<TransformData> TransformBuffer : register(t7);
 
-cbuffer RenderInstanceData : register(b10)
-{
-    int lightIndex;
-    int materialIndex;
-    int diffuseIndex;
-    int padding;
-};
-//StructuredBuffer<RenderInstanceData> RenderInstanceBuffer : register(t10);
-
-cbuffer TransformBuffer : register(b0)
-{
-    matrix World;
-    matrix WVP;
-    float3 ViewPosition;
-}
-
-//cbuffer LightBuffer : register(b1)
-//{
-//	float3 LightDirection;
-//	float4 LightAmbient;
-//	float4 LightDiffuse;
-//	float4 LightSpecular;
-//}
-
-//cbuffer MaterialBuffer : register(b2)
-//{
-//	float4 MaterialAmbient;
-//	float4 MaterialDiffuse;
-//	float4 MaterialSpecular;
-//	float MaterialPower;
-//}
-struct MaterialData
-{
-    float4 MaterialAmbient;
-    float4 MaterialDiffuse;
-    float4 MaterialSpecular;
-    float MaterialPower;
-    float3 pad;
-};
-StructuredBuffer<MaterialData> MaterialBuffer : register(t8);
-
+// this allows each material to use different DL. but technically they should use the same one
 struct DirectionalLightData
 {
     float3 LightDirection;
@@ -67,9 +28,18 @@ struct DirectionalLightData
     float4 LightDiffuse;
     float4 LightSpecular;
 };
-StructuredBuffer<DirectionalLightData> DirectionalLightBuffer : register(t9);
+StructuredBuffer<DirectionalLightData> DirectionalLightBuffer : register(t8);
 
-//Texture2DArray textureArray : register(t10);
+// structured buffer doesn't need to be 16 byte aligned, padding can be removed
+struct MaterialData
+{
+    float4 MaterialAmbient;
+    float4 MaterialDiffuse;
+    float4 MaterialSpecular;
+    float MaterialPower;
+    float3 pad;
+};
+StructuredBuffer<MaterialData> MaterialBuffer : register(t9);
 
 cbuffer SettingsBuffer : register(b3)
 {
@@ -113,14 +83,12 @@ struct VS_OUTPUT
 	float3 dirToView : TEXCOORD2;
 	float2 texCoord	: TEXCOORD3;
 	float4 positionNDC : TEXCOORD4;
-    //int materialIndex : MATERIAL_INDEX;
 };
 
 VS_OUTPUT VS(VS_INPUT input, uint svInstanceId : SV_InstanceID)
 {
 	VS_OUTPUT output;
 	
-    //InstanceData iData = instanceBuffer[svInstanceId];
     TransformData tf = TransformBuffer[svInstanceId];
     matrix World = tf.World;
     matrix WVP = tf.WVP;
@@ -141,15 +109,12 @@ VS_OUTPUT VS(VS_INPUT input, uint svInstanceId : SV_InstanceID)
 
 	if (useShadow)
         output.positionNDC = mul(float4(localPosition, 1.0f), WVPLight);
-
-    //output.materialIndex = iData.materialIndex;
 	
 	return output;
 }
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-    //return float4(0, 1, 0, 1);
 	// Renormalize normals from vertex shader
 	float3 worldNormal = normalize(input.worldNormal);
 	float3 worldTangent = normalize(input.worldTangent);

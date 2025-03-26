@@ -8,9 +8,13 @@ void TSampleInstancedRendering::Init() {
 
     mShader = std::make_unique<TStandardShader>();
     mShader->Init();
-    mMaterial = std::make_unique<TStandardMaterial>("stdmat1", *mShader, DirectionalLight{}, Material{}, mDiffuseTex);
+    DirectionalLight dl;
+    Material mt;
+    mt.power = 32;
+    mMaterial = std::make_unique<TStandardMaterial>("stdmat1", *mShader, dl, mt, mDiffuseTex);
     mMaterial->Init();
-    mMaterial2 = std::make_unique<TStandardMaterial>("stdmat2", *mShader, DirectionalLight{}, Material{}, mDiffuseTex2);
+
+    mMaterial2 = std::make_unique<TStandardMaterial>("stdmat2", *mShader, dl, mt, mDiffuseTex2);
     mMaterial2->Init();
 
     mShader->batchMaterialData();

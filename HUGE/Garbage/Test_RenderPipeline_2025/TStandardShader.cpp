@@ -19,10 +19,10 @@ void TStandardShader::Bind(ID3D11DeviceContext* context) const {
     mPs.Bind();
 
     // t8
-    mMaterialsBuf.BindPS(8);
+    mDirectionalLightsBuf.BindVS(8);
+    mDirectionalLightsBuf.BindPS(8);
     // t9
-    mDirectionalLightsBuf.BindVS(9);
-    mDirectionalLightsBuf.BindPS(9);
+    mMaterialsBuf.BindPS(9);
 
 }
 
