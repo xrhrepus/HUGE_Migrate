@@ -22,13 +22,14 @@ ConstantBuffer& ConstantBuffer::operator=(ConstantBuffer&& rhs) {
 }
 
 
-void ConstantBuffer::Initialize(uint32_t buffersize, const void* initData)
+void ConstantBuffer::Initialize(uint32_t buffersize, bool dynamic, const void* initData)
 {
 	//=============
+	mIsDynamic = dynamic;
 	//constant buffer ->(compute shader) -> vertex
 	D3D11_BUFFER_DESC cdesc{};
 	cdesc.ByteWidth = buffersize;
-	cdesc.Usage = D3D11_USAGE_DEFAULT;
+	cdesc.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 	cdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA subResData{};
@@ -45,6 +46,30 @@ void ConstantBuffer::Terminate()
 void  ConstantBuffer::Set(const void* data) const
 {
 	GetContext()->UpdateSubresource(mConstantBuffer, 0, nullptr, data, 0, 0);//download data to VRAM
+}
+
+void H::Graphics::ConstantBuffer::Map(const void* data, uint32_t byteToMap) const
+{
+	// same as in StructuredBuffer
+	ASSERT(mIsDynamic, "[TypedDynamicConstantBuffer]:non-dynamic buffer should use Set");
+	const bool validDataToCopy = data != nullptr || byteToMap == 0;
+	ASSERT(validDataToCopy, "[TypedDynamicConstantBuffer]: invalid data to set");
+	if (!validDataToCopy)
+	{
+		return;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = GetContext()->Map(mConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	ASSERT(SUCCEEDED(hr), "[TypedDynamicConstantBuffer]: failed to update buffer");
+	if (SUCCEEDED(hr))
+	{
+		// Copy data into the mapped memory
+		memcpy(mappedResource.pData, data, byteToMap);
+
+		// Unmap the buffer to apply changes
+		GetContext()->Unmap(mConstantBuffer, 0);
+	}
 }
 
 void ConstantBuffer::BindVS(uint32_t slot) const
