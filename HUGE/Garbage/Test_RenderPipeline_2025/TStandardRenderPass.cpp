@@ -1,14 +1,17 @@
 #include "TStandardRenderPass.h"
 #include "TRenderPipeline.h"
+#include "TDirectionalLightSource.h"
 
 
 void TStarndardRenderPass::Init() {
     // 
     mTransformBuf.Initialize();
+    mShadowBuf.Initialize();
 }
 void TStarndardRenderPass::Term()
 {
     mTransformBuf.Terminate();
+    mShadowBuf.Terminate();
 }
 
 void TStarndardRenderPass::execute() {
@@ -19,6 +22,10 @@ void TStarndardRenderPass::execute() {
     // some buffers required in the pass
     // only bind once and update data below
     mTransformBuf.BindVS(7);
+
+    mShadowBuf.BindVS(10);
+
+    mShadowMapRTRef->BindPS(5);
 
     for (auto&& [mat, drawCmds] : mDrawRequests)
     {
@@ -40,6 +47,14 @@ void TStarndardRenderPass::execute() {
             {
                 continue;
             }
+            std::vector<ShadowBuffer> lightWVPs;
+            for (auto&& w : cmd.worlds)
+            {
+                H::Math::Matrix4 lwvp = w * mDirectionalLightRef->mLightViewMatrix * mDirectionalLightRef->mLightProjectionMatrix;
+                lightWVPs.emplace_back(ShadowBuffer{ lwvp.Transpose() });
+            }
+            mShadowBuf.Map(*lightWVPs.data(), sizeof(lightWVPs[0]) * lightWVPs.size());
+
             // transform index is same as instanceID
             // all same mesh and material, just draw with different transform
             mTransformBuf.Map(*cmd.tf.data(), sizeof(cmd.tf[0]) * cmd.tf.size());
@@ -49,6 +64,11 @@ void TStarndardRenderPass::execute() {
 }
 void TStarndardRenderPass::add(TStandardDrawCommand&& cmd) {
     mDrawRequests[cmd.mat].emplace_back(std::move(cmd));
+}
+
+void TStarndardRenderPass::setLightSource(const TDirectionalLightSource& dl)
+{
+    mDirectionalLightRef = &dl;
 }
 
 void TStarndardRenderPass::clear() {

@@ -14,7 +14,7 @@ void MyAppState::Initialize()
 	mCamera.SetPosition({ -121.0f, 75.0f, 100.0f });
 	//mCurrentCam.SetDirection({ 0.0f,0.0f, 1.0f });
 	mCamera.SetDirection(H::Math::Normalize(Vector3{ 121.0f, -75.0f, -100.0f }));
-
+	mCamera.SetAspectRatio(128.0f / 72.0f);
 	mTInstanceDraw.Init();
 }
 

@@ -51,6 +51,6 @@ float4 PS(VSOutput input) : SV_Target
 	color.b = 1.0f;
 	color.a = 1.0f;
 
-	//return float4(depth,0.2f, 0.2f, 1.0f);
-	return float4(1.0f,1.0f, 1.0f, depth);
+	return float4(depth,1.0f, 1.0f, 1.0f);
+	//return float4(1.0f,1.0f, 1.0f, 1.0f);
 }

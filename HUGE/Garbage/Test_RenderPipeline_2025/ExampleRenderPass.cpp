@@ -4,18 +4,21 @@
 #include "TCastShadowRenderPass.h"
 
 void TSampleInstancedRendering::Init() {
+    mDirectionalLight.mLightPos = { -121.0f, 75.0f, 100.0f };
+    mDirectionalLight.mLight.direction = -H::Math::Normalize(mDirectionalLight.mLightPos);
+    mDirectionalLight.updateLightVPMatrix(mDirectionalLight.mLight.direction, mDirectionalLight.mLightPos);
+
     mDiffuseTex = TextureManager::Get()->LoadTexture("earth.jpg");
     mDiffuseTex2 = TextureManager::Get()->LoadTexture("fruit42_x10.png");
 
     mShader = std::make_unique<TStandardShader>();
     mShader->Init();
-    DirectionalLight dl;
     Material mt;
     mt.power = 32;
-    mMaterial = std::make_unique<TStandardMaterial>("stdmat1", *mShader, dl, mt, mDiffuseTex);
+    mMaterial = std::make_unique<TStandardMaterial>("stdmat1", *mShader, mDirectionalLight.mLight, mt, mDiffuseTex);
     mMaterial->Init();
 
-    mMaterial2 = std::make_unique<TStandardMaterial>("stdmat2", *mShader, dl, mt, mDiffuseTex2);
+    mMaterial2 = std::make_unique<TStandardMaterial>("stdmat2", *mShader, mDirectionalLight.mLight, mt, mDiffuseTex2);
     mMaterial2->Init();
 
     mShader->batchMaterialData();
@@ -28,12 +31,16 @@ void TSampleInstancedRendering::Init() {
     mMeshRenderer2.mMesh = m2;
     mMeshRenderer2.mMeshBuffer.Initialize(mMeshRenderer2.mMesh);
 
+    auto m3 = MeshBuilder::CreateQuad(222, 222, { 0.0f,0.0f,0.0f });
+    mMeshRenderer3.mMesh = m3;
+    mMeshRenderer3.mMeshBuffer.Initialize(mMeshRenderer3.mMesh);
 
-    mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
+
     mRenderPipeline.add(std::make_unique<TCastShadowRenderPass>());
+    mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
     mRenderPipeline.Init();
     TCastShadowRenderPass* shadowPass = static_cast<TCastShadowRenderPass*>(mRenderPipeline.getRP("TCastShadowRenderPass"));
-    shadowPass->updateLightVPMatrix(H::Math::Normalize(Vector3{ 121.0f, -75.0f, -100.0f }), { -121.0f, 75.0f, 100.0f });
+    shadowPass->updateLightVPMatrix(mDirectionalLight.mLight.direction, mDirectionalLight.mLightPos);
 
 }
 void TSampleInstancedRendering::Term() {
@@ -47,10 +54,10 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
     {
         return;
     }
-
+    standardPass->setLightSource(mDirectionalLight);
     {
         std::vector<TransformData> tfs;
-        std::vector<H::Math::Matrix4> sdtfs;
+        std::vector<H::Math::Matrix4> worlds;
         //===============
         {
             Matrix4 vm = cam.GetViewMatrix();
@@ -79,7 +86,7 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
                 tf1.viewPosition = cam.GetPosition();
                 tfs.emplace_back(tf1);
 
-                sdtfs.emplace_back(world1);
+                worlds.emplace_back(world1);
             }
         }
         //===============
@@ -88,18 +95,19 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
         cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         cmd.numOfInstance = 5;
         cmd.tf = tfs;
+        cmd.worlds = worlds;
 
         standardPass->add(std::move(cmd));
 
         TCastShadowDrawCommand scmd;
         scmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         scmd.numOfInstance = 5;
-        scmd.worldPoss = sdtfs;
+        scmd.worldPoss = worlds;
         shadowPass->add(std::move(scmd));
     }
     {
         std::vector<TransformData> tfs;
-        std::vector<H::Math::Matrix4> sdtfs;
+        std::vector<H::Math::Matrix4> worlds;
         //===============
         {
             Matrix4 vm = cam.GetViewMatrix();
@@ -116,7 +124,7 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
 
             for (size_t i = 0; i < 8; i++)
             {
-                Vector3 wp = { -30.0f * i,0.0f,0.0f };
+                Vector3 wp = { -30.0f * i - 5.0f,10.0f,0.0f };
                 Matrix4 worldMat1;
                 worldMat1.Translation(wp);
                 Matrix4 world1 = rot * worldMat1;
@@ -128,7 +136,7 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
                 tf1.viewPosition = cam.GetPosition();
                 tfs.emplace_back(tf1);
 
-                sdtfs.emplace_back(world1);
+                worlds.emplace_back(world1);
             }
         }
         //===============
@@ -138,15 +146,45 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
             cmd.meshBuf = &mMeshRenderer2.mMeshBuffer;
             cmd.numOfInstance = 7;
             cmd.tf = tfs;
+            cmd.worlds = worlds;
 
             standardPass->add(std::move(cmd));
 
             TCastShadowDrawCommand scmd;
             scmd.meshBuf = &mMeshRenderer2.mMeshBuffer;
             scmd.numOfInstance = 7;
-            scmd.worldPoss = sdtfs;
+            scmd.worldPoss = worlds;
             shadowPass->add(std::move(scmd));
         }
+    }
+    {
+        std::vector<TransformData> tfs;
+        std::vector<H::Math::Matrix4> worlds;
+
+        Matrix4 vm = cam.GetViewMatrix();
+        Matrix4 pm = cam.GetPerspectiveMatrix();
+        Matrix4 rot;
+        rot.RotationX(90 * H::Math::Constants::DegToRad);
+        Matrix4 worldMat;
+        worldMat.Translation({ 0.0f,-20.0f,0.0f });
+        Matrix4 world = rot * worldMat;
+        Matrix4 comp = world * vm * pm;
+
+        TransformData tf1;
+        tf1.world = H::Math::Transpose(world);
+        tf1.wvp = H::Math::Transpose(comp);
+        tf1.viewPosition = cam.GetPosition();
+        tfs.emplace_back(tf1);
+        worlds.emplace_back(world);
+
+        TStandardDrawCommand cmd;
+        cmd.mat = mMaterial2.get();
+        cmd.meshBuf = &mMeshRenderer3.mMeshBuffer;
+        cmd.numOfInstance = 1;
+        cmd.tf = tfs;
+        cmd.worlds = worlds;
+
+        standardPass->add(std::move(cmd));
     }
 
     mRenderPipeline.execute();

@@ -8,7 +8,7 @@ void TCastShadowRenderPass::Init()
     mLightSourceData.Initialize();
     mTransformBuf.Initialize();
     auto gSys = GraphicSystem::Get();
-    mShadowMapRT.Initialize(gSys->GetBackBufferWidth(), gSys->GetBackBufferHeight(),
+    mShadowMapRT.Initialize(1280, 720,
         RenderTarget::Format::RGBA_U8);
     mShadowMapRT.SetClearColor(0, 0, 0, 1);
 }

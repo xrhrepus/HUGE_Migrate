@@ -41,6 +41,12 @@ struct MaterialData
 };
 StructuredBuffer<MaterialData> MaterialBuffer : register(t9);
 
+struct ShadowData
+{
+	matrix WVPLight;
+};
+StructuredBuffer<ShadowData> ShadowBuffer : register(t10);
+
 cbuffer SettingsBuffer : register(b3)
 {
 	float specularMapWeight : packoffset(c0.x);
@@ -50,11 +56,6 @@ cbuffer SettingsBuffer : register(b3)
 	float brightness : packoffset(c1.x);
 	bool useShadow : packoffset(c1.y);
 	float depthBias : packoffset(c1.z);
-}
-
-cbuffer ShadowBuffer : register(b4)
-{
-	matrix WVPLight;
 }
 
 Texture2D diffuseMap : register(t0);
@@ -107,8 +108,8 @@ VS_OUTPUT VS(VS_INPUT input, uint svInstanceId : SV_InstanceID)
 	output.dirToView = normalize(ViewPosition - worldPosition);
 	output.texCoord = input.texCoord;
 
-	if (useShadow)
-        output.positionNDC = mul(float4(localPosition, 1.0f), WVPLight);
+	if (true)
+        output.positionNDC = mul(float4(localPosition, 1.0f), ShadowBuffer[svInstanceId].WVPLight);
 	
 	return output;
 }
@@ -153,7 +154,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 	float4 color = (ambient + diffuse) * textureColor * 1 + specular * specularFactor;
 
-	if (useShadow)
+	if (true)
 	{
 		// NDC:   +---------+        UV: +----------->
 		//       /   1     /|            |(0, 0)    |
@@ -163,7 +164,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 		//      |    |    |/             |----------+
 		//      +----|----+              V        (1, 1)
 		//          -1
-		float actualDepth = 1.0f - input.positionNDC.z / input.positionNDC.w;
+		float actualDepth = 1.0f - (input.positionNDC.z / input.positionNDC.w);
 		float2 shadowUV = input.positionNDC.xy / input.positionNDC.w;
 		shadowUV = (shadowUV + 1.0f) * 0.5f;
 		shadowUV.y = 1.0f - shadowUV.y;
@@ -171,9 +172,9 @@ float4 PS(VS_OUTPUT input) : SV_Target
 			saturate(shadowUV.y) == shadowUV.y)
 		{
 			float savedDepth = depthMap.Sample(textureSampler, shadowUV).r;
-			if (savedDepth > actualDepth + depthBias)
-				color = ambient * textureColor;
-                //color = float4(1.0f,0.0f,0.0f,1.0f);
+			if (savedDepth > actualDepth + 0.0001f)
+				//color = ambient * textureColor;
+                color = float4(0.0f,0.0f,0.0f,1.0f);
 		}
 	}
 

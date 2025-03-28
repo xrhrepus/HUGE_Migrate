@@ -45,6 +45,9 @@
     <ClInclude Include="TCastShadowRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TDirectionalLightSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyAppState.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TCastShadowRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TDirectionalLightSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

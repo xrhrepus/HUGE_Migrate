@@ -138,6 +138,7 @@
     <ClInclude Include="ExampleRenderPass.h" />
     <ClInclude Include="MyAppState.h" />
     <ClInclude Include="TCastShadowRenderPass.h" />
+    <ClInclude Include="TDirectionalLightSource.h" />
     <ClInclude Include="TMeshRenderer.h" />
     <ClInclude Include="TNormalDepthShader.h" />
     <ClInclude Include="TRenderPipeline.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="ExampleRenderPass.cpp" />
     <ClCompile Include="MyAppState.cpp" />
     <ClCompile Include="TCastShadowRenderPass.cpp" />
+    <ClCompile Include="TDirectionalLightSource.cpp" />
     <ClCompile Include="TNormalDepthShader.cpp" />
     <ClCompile Include="TRenderPipeline.cpp" />
     <ClCompile Include="TRenderPipelineInterface.cpp" />
