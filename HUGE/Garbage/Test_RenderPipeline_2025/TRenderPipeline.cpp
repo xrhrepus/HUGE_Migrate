@@ -23,6 +23,7 @@ void TRenderPipeline::execute()
     for (auto&& [name, rp] : mRPs)
     {
         rp->execute();
+        rp->addOutputToRenderPipeline(*this);
         rp->clear();
     }
 }
@@ -46,6 +47,20 @@ TIRenderPass* TRenderPipeline::getRP(const std::string& name)
     if (auto it = mRPs.find(name); it != mRPs.end())
     {
         return it->second.get();
+    }
+    return nullptr;
+}
+
+void TRenderPipeline::addRPOutput(const std::string& name, const RenderTarget& outputRT)
+{
+    mRPOutput[name] = &outputRT;
+}
+
+const RenderTarget* TRenderPipeline::getRPOutput(const std::string& name) const
+{
+	if (auto it = mRPOutput.find(name); it != mRPOutput.end())
+    {
+        return it->second;
     }
     return nullptr;
 }

@@ -2,6 +2,8 @@
 #include <Graphics/Inc/Graphics.h>
 #include <Graphics/Src/D3DUtil.h>
 
+class TRenderPipeline;
+
 using namespace H::Graphics;
 
 class TIShader {
@@ -33,4 +35,5 @@ public:
     virtual void execute() = 0;
     virtual void clear() = 0;
     virtual const std::string& getName() const = 0;
+    virtual void addOutputToRenderPipeline(TRenderPipeline& pipeline) const;
 };

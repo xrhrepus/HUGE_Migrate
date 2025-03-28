@@ -16,6 +16,7 @@ public:
     void execute() override;
     void clear() override;
     const std::string& getName() const override;
+    void addOutputToRenderPipeline(TRenderPipeline& pipeline) const override;
 
     void add(TCastShadowDrawCommand&& cmd);
     void updateLightVPMatrix(const H::Math::Vector3& lightDir, const H::Math::Vector3& lightPos);
@@ -34,5 +35,7 @@ private:
     H::Graphics::TypedDynamicStructuredBuffer<TransformData, 1> mLightSourceData;
     H::Graphics::TypedDynamicStructuredBuffer<TransformData, 100> mTransformBuf;
     std::vector<TCastShadowDrawCommand> mDrawRequests;
+
+    const std::string mOutShadowMapName = "ShadowMap";
     H::Graphics::RenderTarget mShadowMapRT;
 };

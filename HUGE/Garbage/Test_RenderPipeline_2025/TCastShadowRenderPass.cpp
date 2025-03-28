@@ -1,4 +1,5 @@
 #include "TCastShadowRenderPass.h"
+#include "TRenderPipeline.h"
 
 
 void TCastShadowRenderPass::Init()
@@ -68,6 +69,11 @@ void TCastShadowRenderPass::clear()
 const std::string& TCastShadowRenderPass::getName() const
 {
     return RP_NAME;
+}
+
+void TCastShadowRenderPass::addOutputToRenderPipeline(TRenderPipeline& pipeline) const
+{
+    pipeline.addRPOutput(mOutShadowMapName, mShadowMapRT);
 }
 
 void TCastShadowRenderPass::add(TCastShadowDrawCommand&& cmd)

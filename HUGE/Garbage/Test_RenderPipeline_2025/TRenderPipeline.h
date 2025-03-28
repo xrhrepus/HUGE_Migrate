@@ -17,9 +17,11 @@ public:
     void add(std::unique_ptr<TIRenderPass>&& rp);
     const TIRenderPass* getRP(const std::string& name) const;
     TIRenderPass* getRP(const std::string& name);
+    void addRPOutput(const std::string& name, const H::Graphics::RenderTarget& outputRT);
+    const H::Graphics::RenderTarget* getRPOutput(const std::string& name) const;
 
     std::unordered_map<std::string, std::unique_ptr<TIRenderPass>> mRPs;
-    std::unordered_map<std::string, ID3D11ShaderResourceView*> mRPOutput;
+    std::unordered_map<std::string, const H::Graphics::RenderTarget*> mRPOutput;
 };
 /// <summary>
 /// Vertex with additional instanceID to support batch rendering. Later moved to Graphics lib.
