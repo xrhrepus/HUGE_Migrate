@@ -41,7 +41,7 @@ void TStarndardRenderPass::execute() {
             }
             // transform index is same as instanceID
             // all same mesh and material, just draw with different transform
-            mTransformBuf.Set(*cmd.tf.data(), sizeof(cmd.tf[0]) * cmd.tf.size());
+            mTransformBuf.Map(*cmd.tf.data(), sizeof(cmd.tf[0]) * cmd.tf.size());
             cmd.meshBuf->RenderInstanced(cmd.numOfInstance);
         }
     }

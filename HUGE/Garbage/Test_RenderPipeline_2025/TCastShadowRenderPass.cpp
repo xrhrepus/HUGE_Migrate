@@ -49,7 +49,7 @@ void TCastShadowRenderPass::execute()
 
         // transform index is same as instanceID
         // all same mesh and material, just draw with different transform
-        mTransformBuf.Set(*tf.data(), sizeof(tf[0]) * tf.size());
+        mTransformBuf.Map(*tf.data(), sizeof(tf[0]) * tf.size());
 
         //mLightSourceData.Set(calculateTFData(cmd.worldPoss));
 

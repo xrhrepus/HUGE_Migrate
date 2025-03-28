@@ -55,7 +55,12 @@ namespace H::Graphics {
 			StructuredBuffer::Initialize(sizeof(DataType), numberOfElements, true);
 		}
 
-		void Set(const DataType& data, uint32_t byteToMap) const
+		void Set(const DataType&) const
+		{
+			ASSERT(false, "[TypedDynamicStructuredBuffer]: dynamic buffer should use Map/UnMap");
+		}
+
+		void Map(const DataType& data, uint32_t byteToMap) const
 		{
 			StructuredBuffer::Map(&data, byteToMap);
 		}
