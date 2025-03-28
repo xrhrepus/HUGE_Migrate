@@ -1,4 +1,5 @@
 #include "TStandardRenderPass.h"
+#include "TRenderPipeline.h"
 
 
 void TStarndardRenderPass::Init() {
@@ -56,4 +57,11 @@ void TStarndardRenderPass::clear() {
 const std::string& TStarndardRenderPass::getName() const
 {
     return RP_NAME;
+}
+
+void TStarndardRenderPass::getInputFromRenderPipeline(const TRenderPipeline& pipeline)
+{
+    mShadowMapRTRef = pipeline.getRPOutput(SHADOW_MAP_NAME);
+    // assert if get nullptr
+    ASSERT(mShadowMapRTRef, "");
 }

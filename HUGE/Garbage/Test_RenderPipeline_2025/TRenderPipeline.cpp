@@ -22,6 +22,7 @@ void TRenderPipeline::execute()
 {
     for (auto&& [name, rp] : mRPs)
     {
+        rp->getInputFromRenderPipeline(*this);
         rp->execute();
         rp->addOutputToRenderPipeline(*this);
         rp->clear();

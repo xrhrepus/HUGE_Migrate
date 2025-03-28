@@ -16,6 +16,11 @@ const std::string& TIMaterial::getName() const
     return mName;
 }
 
+void TIRenderPass::getInputFromRenderPipeline(const TRenderPipeline&)
+{
+    // do nothing
+}
+
 void TIRenderPass::addOutputToRenderPipeline(TRenderPipeline&) const
 {
     // do nothing

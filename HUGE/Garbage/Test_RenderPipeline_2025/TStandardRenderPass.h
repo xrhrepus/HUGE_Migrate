@@ -20,9 +20,13 @@ public:
     void execute() override;
     void clear() override;
     const std::string& getName() const override;
+    void getInputFromRenderPipeline(const TRenderPipeline& pipeline);
 
     void add(TStandardDrawCommand&& cmd);
 private:
+    inline static const std::string SHADOW_MAP_NAME = "ShadowMap";
+    const H::Graphics::RenderTarget* mShadowMapRTRef = nullptr;
+
     struct CompareByName {
         bool operator()(TIMaterial* a, TIMaterial* b) const {
             return a->getName() < b->getName();
