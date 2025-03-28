@@ -1,0 +1,111 @@
+#include "TCastShadowRenderPass.h"
+
+
+void TCastShadowRenderPass::Init()
+{
+    mShader.Init();
+    mLightSourceData.Initialize();
+    mTransformBuf.Initialize();
+    auto gSys = GraphicSystem::Get();
+    mShadowMapRT.Initialize(gSys->GetBackBufferWidth(), gSys->GetBackBufferHeight(),
+        RenderTarget::Format::RGBA_U8);
+    mShadowMapRT.SetClearColor(0, 0, 0, 1);
+}
+
+void TCastShadowRenderPass::Term()
+{
+    mShader.Term();
+    mLightSourceData.Terminate();
+    mTransformBuf.Terminate();
+    mShadowMapRT.Terminate();
+}
+
+void TCastShadowRenderPass::execute()
+{
+    mShadowMapRT.BeginRender();
+    DepthStencilManager::Get()->GetDepthStencilState("ZTest")->Set();
+    auto context = GetContext();
+    mShader.Bind(context);
+    mTransformBuf.BindVS(7);
+    mLightSourceData.BindVS(8);
+    for (auto&& cmd : mDrawRequests)
+    {
+        if (cmd.worldPoss.empty())
+        {
+            continue;
+        }
+        std::vector<H::Graphics::TransformData> tf;
+        for (auto&& w : cmd.worldPoss)
+        {
+            TransformData tfd;
+            tfd.world = w;
+            //tfd.viewPosition = mLightViewMatrix;
+            H::Math::Matrix4 wvp = w * mLightViewMatrix * mLightProjectionMatrix;
+            tfd.wvp = wvp.Transpose();
+            tfd.world = w.Transpose();
+            //tfd.wvp = tfd.wvp.Transpose();
+            tf.emplace_back(tfd);
+        }
+
+        // transform index is same as instanceID
+        // all same mesh and material, just draw with different transform
+        mTransformBuf.Set(*tf.data(), sizeof(tf[0]) * tf.size());
+
+        //mLightSourceData.Set(calculateTFData(cmd.worldPoss));
+
+
+        cmd.meshBuf->RenderInstanced(cmd.numOfInstance);
+    }
+
+    mShadowMapRT.EndRender();
+}
+
+void TCastShadowRenderPass::clear()
+{
+    mDrawRequests.clear();
+}
+
+const std::string& TCastShadowRenderPass::getName() const
+{
+    return RP_NAME;
+}
+
+void TCastShadowRenderPass::add(TCastShadowDrawCommand&& cmd)
+{
+    mDrawRequests.emplace_back(std::move(cmd));
+}
+
+void TCastShadowRenderPass::updateLightVPMatrix(const H::Math::Vector3& lightDir, const H::Math::Vector3& lightPos)
+{
+    const H::Math::Vector3 right = H::Math::Cross(H::Math::Vector3::yAxis(), lightDir);
+    const H::Math::Vector3 up = H::Math::Cross(lightDir, right);
+
+    mLightViewMatrix = H::Graphics::ComputeViewMatrix(right, up, lightDir, lightPos);
+    mLightProjectionMatrix = H::Graphics::ComputePerspectiveMatrix(1.0f, 1000.0f, 60.0f * H::Math::Constants::DegToRad, 2.66f);
+}
+
+const H::Math::Matrix4& TCastShadowRenderPass::getLightViewMatrix() const
+{
+    return mLightViewMatrix;
+}
+
+const H::Math::Matrix4& TCastShadowRenderPass::getLightProjectionMatrix() const
+{
+    return mLightProjectionMatrix;
+}
+
+TransformData TCastShadowRenderPass::calculateTFData(const H::Math::Vector3& meshWorldPos) const
+{
+    TransformData tf;
+    tf.world = H::Math::Matrix4::translation(meshWorldPos);
+    tf.wvp = tf.world * mLightViewMatrix * mLightProjectionMatrix;
+    tf.world = tf.world.Transpose();
+    tf.wvp = tf.wvp.Transpose();
+
+    return tf;
+}
+
+ID3D11ShaderResourceView* TCastShadowRenderPass::getRTTexture() const
+{
+    return mShadowMapRT.GetShaderResourceView();
+}

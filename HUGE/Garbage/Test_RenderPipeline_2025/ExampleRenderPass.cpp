@@ -1,6 +1,7 @@
 #include "ExampleRenderPass.h"
 #include "TStandardShader.h"
 #include "TStandardRenderPass.h"
+#include "TCastShadowRenderPass.h"
 
 void TSampleInstancedRendering::Init() {
     mDiffuseTex = TextureManager::Get()->LoadTexture("earth.jpg");
@@ -29,7 +30,10 @@ void TSampleInstancedRendering::Init() {
 
 
     mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
+    mRenderPipeline.add(std::make_unique<TCastShadowRenderPass>());
     mRenderPipeline.Init();
+    TCastShadowRenderPass* shadowPass = static_cast<TCastShadowRenderPass*>(mRenderPipeline.getRP("TCastShadowRenderPass"));
+    shadowPass->updateLightVPMatrix(H::Math::Normalize(Vector3{ 121.0f, -75.0f, -100.0f }), { -121.0f, 75.0f, 100.0f });
 
 }
 void TSampleInstancedRendering::Term() {
@@ -38,12 +42,15 @@ void TSampleInstancedRendering::Term() {
 void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
 
     TStarndardRenderPass* standardPass = static_cast<TStarndardRenderPass*>(mRenderPipeline.getRP("TStarndardRenderPass"));
-    if (!standardPass)
+    TCastShadowRenderPass* shadowPass = static_cast<TCastShadowRenderPass*>(mRenderPipeline.getRP("TCastShadowRenderPass"));
+    if (!standardPass || !shadowPass)
     {
         return;
     }
+
     {
         std::vector<TransformData> tfs;
+        std::vector<H::Math::Matrix4> sdtfs;
         //===============
         {
             Matrix4 vm = cam.GetViewMatrix();
@@ -60,8 +67,9 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
 
             for (size_t i = 0; i < 5; i++)
             {
+                Vector3 wp = { -20.0f * i,0.0f,0.0f };
                 Matrix4 worldMat1;
-                worldMat1.Translation({ -20.0f * i,0.0f,0.0f });
+                worldMat1.Translation(wp);
                 Matrix4 world1 = worldMat1 * rot;
                 Matrix4 comp1 = world1 * vm * pm;
                 //Matrix4 comp1 = pm * vm * world1;
@@ -70,6 +78,8 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
                 tf1.wvp = H::Math::Transpose(comp1);
                 tf1.viewPosition = cam.GetPosition();
                 tfs.emplace_back(tf1);
+
+                sdtfs.emplace_back(world1);
             }
         }
         //===============
@@ -77,12 +87,19 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
         cmd.mat = mMaterial2.get();
         cmd.meshBuf = &mMeshRenderer.mMeshBuffer;
         cmd.numOfInstance = 5;
-        cmd.tf = std::move(tfs);
+        cmd.tf = tfs;
 
         standardPass->add(std::move(cmd));
+
+        TCastShadowDrawCommand scmd;
+        scmd.meshBuf = &mMeshRenderer.mMeshBuffer;
+        scmd.numOfInstance = 5;
+        scmd.worldPoss = sdtfs;
+        shadowPass->add(std::move(scmd));
     }
     {
         std::vector<TransformData> tfs;
+        std::vector<H::Math::Matrix4> sdtfs;
         //===============
         {
             Matrix4 vm = cam.GetViewMatrix();
@@ -99,8 +116,9 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
 
             for (size_t i = 0; i < 8; i++)
             {
+                Vector3 wp = { -30.0f * i,0.0f,0.0f };
                 Matrix4 worldMat1;
-                worldMat1.Translation({ -30.0f * i,0.0f,0.0f });
+                worldMat1.Translation(wp);
                 Matrix4 world1 = rot * worldMat1;
                 Matrix4 comp1 = world1 * vm * pm;
                 //Matrix4 comp1 = pm * vm * world1;
@@ -109,6 +127,8 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
                 tf1.wvp = H::Math::Transpose(comp1);
                 tf1.viewPosition = cam.GetPosition();
                 tfs.emplace_back(tf1);
+
+                sdtfs.emplace_back(world1);
             }
         }
         //===============
@@ -117,11 +137,31 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
             cmd.mat = mMaterial.get();
             cmd.meshBuf = &mMeshRenderer2.mMeshBuffer;
             cmd.numOfInstance = 7;
-            cmd.tf = std::move(tfs);
+            cmd.tf = tfs;
 
             standardPass->add(std::move(cmd));
+
+            TCastShadowDrawCommand scmd;
+            scmd.meshBuf = &mMeshRenderer2.mMeshBuffer;
+            scmd.numOfInstance = 7;
+            scmd.worldPoss = sdtfs;
+            shadowPass->add(std::move(scmd));
         }
     }
 
     mRenderPipeline.execute();
+}
+
+void TSampleInstancedRendering::DebugUI()
+{
+    TStarndardRenderPass* standardPass = static_cast<TStarndardRenderPass*>(mRenderPipeline.getRP("TStarndardRenderPass"));
+    TCastShadowRenderPass* shadowPass = static_cast<TCastShadowRenderPass*>(mRenderPipeline.getRP("TCastShadowRenderPass"));
+    if (!standardPass || !shadowPass)
+    {
+        return;
+    }
+
+    ImGui::Begin("testsdmap");
+    ImGui::Image(shadowPass->getRTTexture(), { 480,180 });
+    ImGui::End();
 }

@@ -42,6 +42,8 @@ void MyAppState::DebugUI()
 {
 	ImGui::ShowDemoWindow();
 
+	mTInstanceDraw.DebugUI();
+
 	ImGui::Begin("Cam");
 	mCurrentCam->DebugUI();
 	ImGui::End();

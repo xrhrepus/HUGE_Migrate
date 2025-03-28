@@ -26,6 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{AFF9
 		Assets\Shaders\Particle.fx = Assets\Shaders\Particle.fx
 		Assets\Shaders\PostProcessing.fx = Assets\Shaders\PostProcessing.fx
 		Assets\Shaders\PostProcessingCombine.fx = Assets\Shaders\PostProcessingCombine.fx
+		Assets\Shaders\ShadowMapInstanced.fx = Assets\Shaders\ShadowMapInstanced.fx
 		Assets\Shaders\ShadowMap_Test.fx = Assets\Shaders\ShadowMap_Test.fx
 		Assets\Shaders\SimpleDraw.fx = Assets\Shaders\SimpleDraw.fx
 		Assets\Shaders\Skinning.fx = Assets\Shaders\Skinning.fx

@@ -22,5 +22,6 @@ struct TSampleInstancedRendering {
     void Init();
     void Term();
     void DrawWithRenderPass(const Camera& cam);
+    void DebugUI();
 };
 
