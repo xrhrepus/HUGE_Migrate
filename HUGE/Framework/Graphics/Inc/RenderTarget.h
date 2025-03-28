@@ -27,8 +27,8 @@ public:
 	void BeginRender();
 	void EndRender();
 
-	void BindPS(uint32_t slot);
-	void UnbindPS(uint32_t slot);
+	void BindPS(uint32_t slot) const;
+	void UnbindPS(uint32_t slot) const;
 	void Reset();
 	ID3D11ShaderResourceView* GetShaderResourceView() const;
 	void SetClearColor(float r, float g, float b, float a);

@@ -101,12 +101,12 @@ void RenderTarget::EndRender()
 	GraphicSystem::Get()->ResetViewport();
 }
 
-void RenderTarget::BindPS(uint32_t index)
+void RenderTarget::BindPS(uint32_t index) const
 {
 	GetContext()->PSSetShaderResources(index, 1, &mShaderResourceView);
 }
 
-void RenderTarget::UnbindPS(uint32_t index)
+void RenderTarget::UnbindPS(uint32_t index) const
 {
 	static ID3D11ShaderResourceView* dummy = nullptr;
 	GetContext()->PSSetShaderResources(index, 1, &dummy);
