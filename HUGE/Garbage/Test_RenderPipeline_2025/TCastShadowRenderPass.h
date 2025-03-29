@@ -3,6 +3,8 @@
 #include "TStandardShader.h"
 #include "TShadowMapShader.h"
 
+struct TDirectionalLightSource;
+
 struct TCastShadowDrawCommand {
     H::Graphics::MeshBuffer* meshBuf;
     uint32_t numOfInstance;
@@ -22,15 +24,18 @@ public:
     void updateLightVPMatrix(const H::Math::Vector3& lightDir, const H::Math::Vector3& lightPos);
     const H::Math::Matrix4& getLightViewMatrix() const;
     const H::Math::Matrix4& getLightProjectionMatrix() const;
-    TransformData calculateTFData(const H::Math::Vector3& meshWorldPos) const;
+    TransformData calculateTFData(const H::Math::Matrix4& meshWorld, const TDirectionalLightSource& dls) const;
+    // ideally it should be some global service
+    void setLightSource(const TDirectionalLightSource& dl);
 
     ID3D11ShaderResourceView* getRTTexture() const;
 private:
     inline static const std::string RP_NAME = "TCastShadowRenderPass";
     TShadowMapShader mShader;
 
-    H::Math::Matrix4 mLightViewMatrix;
-    H::Math::Matrix4 mLightProjectionMatrix;
+    //H::Math::Matrix4 mLightViewMatrix;
+    //H::Math::Matrix4 mLightProjectionMatrix;
+    const TDirectionalLightSource* mDirectionalLightRef = nullptr;
 
     H::Graphics::TypedDynamicStructuredBuffer<TransformData, 1> mLightSourceData;
     H::Graphics::TypedDynamicStructuredBuffer<TransformData, 100> mTransformBuf;

@@ -1,5 +1,6 @@
 #include "TCastShadowRenderPass.h"
 #include "TRenderPipeline.h"
+#include "TDirectionalLightSource.h"
 
 
 void TCastShadowRenderPass::Init()
@@ -8,7 +9,7 @@ void TCastShadowRenderPass::Init()
     mLightSourceData.Initialize();
     mTransformBuf.Initialize();
     auto gSys = GraphicSystem::Get();
-    mShadowMapRT.Initialize(1280, 720,
+    mShadowMapRT.Initialize(2048, 2048,
         RenderTarget::Format::RGBA_U8);
     mShadowMapRT.SetClearColor(0, 0, 0, 1);
 }
@@ -38,12 +39,13 @@ void TCastShadowRenderPass::execute()
         std::vector<H::Graphics::TransformData> tf;
         for (auto&& w : cmd.worldPoss)
         {
-            TransformData tfd;
-            tfd.world = w;
-            //tfd.viewPosition = mLightViewMatrix;
-            H::Math::Matrix4 wvp = w * mLightViewMatrix * mLightProjectionMatrix;
-            tfd.wvp = wvp.Transpose();
-            tfd.world = w.Transpose();
+            TransformData tfd = calculateTFData(w, *mDirectionalLightRef);
+            //tfd.world = w;
+            ////tfd.viewPosition = mLightViewMatrix;
+            //
+            //H::Math::Matrix4 wvp = w * mLightViewMatrix * mLightProjectionMatrix;
+            //tfd.wvp = wvp.Transpose();
+            //tfd.world = w.Transpose();
             //tfd.wvp = tfd.wvp.Transpose();
             tf.emplace_back(tfd);
         }
@@ -81,34 +83,41 @@ void TCastShadowRenderPass::add(TCastShadowDrawCommand&& cmd)
     mDrawRequests.emplace_back(std::move(cmd));
 }
 
-void TCastShadowRenderPass::updateLightVPMatrix(const H::Math::Vector3& lightDir, const H::Math::Vector3& lightPos)
-{
-    const H::Math::Vector3 right = H::Math::Cross(H::Math::Vector3::yAxis(), lightDir);
-    const H::Math::Vector3 up = H::Math::Cross(lightDir, right);
+//void TCastShadowRenderPass::updateLightVPMatrix(const H::Math::Vector3& lightDir, const H::Math::Vector3& lightPos)
+//{
+//    const H::Math::Vector3 right = H::Math::Cross(H::Math::Vector3::yAxis(), lightDir);
+//    const H::Math::Vector3 up = H::Math::Cross(lightDir, right);
+//
+//    mLightViewMatrix = H::Graphics::ComputeViewMatrix(right, up, lightDir, lightPos);
+//    //mLightProjectionMatrix = H::Graphics::ComputePerspectiveMatrix(1.0f, 1000.0f, 60.0f * H::Math::Constants::DegToRad, 2.66f);
+//    mLightProjectionMatrix = H::Graphics::CreateOrthographicMatrix(2048, 2048, 1.0f, 1000.0f);
+//
+//}
+//
+//const H::Math::Matrix4& TCastShadowRenderPass::getLightViewMatrix() const
+//{
+//    return mLightViewMatrix;
+//}
+//
+//const H::Math::Matrix4& TCastShadowRenderPass::getLightProjectionMatrix() const
+//{
+//    return mLightProjectionMatrix;
+//}
 
-    mLightViewMatrix = H::Graphics::ComputeViewMatrix(right, up, lightDir, lightPos);
-    mLightProjectionMatrix = H::Graphics::ComputePerspectiveMatrix(1.0f, 1000.0f, 60.0f * H::Math::Constants::DegToRad, 2.66f);
-}
-
-const H::Math::Matrix4& TCastShadowRenderPass::getLightViewMatrix() const
-{
-    return mLightViewMatrix;
-}
-
-const H::Math::Matrix4& TCastShadowRenderPass::getLightProjectionMatrix() const
-{
-    return mLightProjectionMatrix;
-}
-
-TransformData TCastShadowRenderPass::calculateTFData(const H::Math::Vector3& meshWorldPos) const
+TransformData TCastShadowRenderPass::calculateTFData(const H::Math::Matrix4& meshWorld, const TDirectionalLightSource& dls) const
 {
     TransformData tf;
-    tf.world = H::Math::Matrix4::translation(meshWorldPos);
-    tf.wvp = tf.world * mLightViewMatrix * mLightProjectionMatrix;
+    tf.world = meshWorld;
+    tf.wvp = tf.world * dls.mLightViewMatrix * dls.mLightProjectionMatrix;
     tf.world = tf.world.Transpose();
     tf.wvp = tf.wvp.Transpose();
 
     return tf;
+}
+
+void TCastShadowRenderPass::setLightSource(const TDirectionalLightSource& dl)
+{
+    mDirectionalLightRef = &dl;
 }
 
 ID3D11ShaderResourceView* TCastShadowRenderPass::getRTTexture() const

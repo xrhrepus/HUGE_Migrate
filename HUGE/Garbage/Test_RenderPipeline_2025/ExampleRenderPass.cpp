@@ -40,7 +40,7 @@ void TSampleInstancedRendering::Init() {
     mRenderPipeline.add(std::make_unique<TStarndardRenderPass>());
     mRenderPipeline.Init();
     TCastShadowRenderPass* shadowPass = static_cast<TCastShadowRenderPass*>(mRenderPipeline.getRP("TCastShadowRenderPass"));
-    shadowPass->updateLightVPMatrix(mDirectionalLight.mLight.direction, mDirectionalLight.mLightPos);
+    //shadowPass->updateLightVPMatrix(mDirectionalLight.mLight.direction, mDirectionalLight.mLightPos);
 
 }
 void TSampleInstancedRendering::Term() {
@@ -55,6 +55,7 @@ void TSampleInstancedRendering::DrawWithRenderPass(const Camera& cam) {
         return;
     }
     standardPass->setLightSource(mDirectionalLight);
+    shadowPass->setLightSource(mDirectionalLight);
     {
         std::vector<TransformData> tfs;
         std::vector<H::Math::Matrix4> worlds;
@@ -200,6 +201,6 @@ void TSampleInstancedRendering::DebugUI()
     }
 
     ImGui::Begin("testsdmap");
-    ImGui::Image(shadowPass->getRTTexture(), { 480,180 });
+    ImGui::Image(shadowPass->getRTTexture(), { 480,480 });
     ImGui::End();
 }

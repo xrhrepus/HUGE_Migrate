@@ -172,7 +172,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 			saturate(shadowUV.y) == shadowUV.y)
 		{
 			float savedDepth = depthMap.Sample(textureSampler, shadowUV).r;
-			if (savedDepth > actualDepth + 0.0001f)
+			if (savedDepth > actualDepth + 0.008f)
 				//color = ambient * textureColor;
                 color = float4(0.0f,0.0f,0.0f,1.0f);
 		}
