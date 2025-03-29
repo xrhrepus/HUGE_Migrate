@@ -51,6 +51,20 @@ Math::Matrix4 Graphics::ComputePerspectiveMatrix(float nearp, float farp, float 
 //	|/
 //	--------> x
 
+Math::Matrix4 Graphics::CreateOrthographicMatrix(float width, float height, float nearPlane, float farPlane)
+{
+	const float w = width;
+	const float h = height;
+	const float zf = farPlane;
+	const float zn = nearPlane;
+
+	return Math::Matrix4{
+		2.0f / w, 0.0f,   0.0f,		   0.0f,
+		0.0f,   2.0f / h, 0.0f,		   0.0f,
+		0.0f,   0.0f,   1.0f / (zf - zn),0.0f,
+		0.0f,   0.0f,   zn / (zn - zf),1.0f
+	};
+}
 
 Math::Matrix4 Camera::GetViewMatrix()const
 {
@@ -72,17 +86,7 @@ Math::Matrix4 Camera::GetPerspectiveMatrix(float aspectratio) const
 }
 Math::Matrix4 H::Graphics::Camera::GetOrthographicMatrix(float width, float height) const
 {
-	const float w = width;
-	const float h = height;
-	const float zf = mFarPlane;
-	const float zn = mNearPlane;
- 
-	return Math::Matrix4{
-		2.0f/w, 0.0f,   0.0f,		   0.0f,
-		0.0f,   2.0f/h, 0.0f,		   0.0f,
-		0.0f,   0.0f,   1.0f / (zf-zn),0.0f,
-		0.0f,   0.0f,   zn / (zn - zf),1.0f
-	};
+	return CreateOrthographicMatrix(width, height, mNearPlane, mFarPlane);
 }
 void  Camera::SetPosition(const Math::Vector3& pos)
 {

@@ -6,7 +6,7 @@ namespace Graphics {
 
 		Math::Matrix4 ComputeViewMatrix(const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& look, const  Math::Vector3& position);
 		Math::Matrix4 ComputePerspectiveMatrix(float nearp, float farp, float fov, float aspect);
-		
+		Math::Matrix4 CreateOrthographicMatrix(float width, float height, float nearPlane, float farPlane);
 		//Y is up
 		class Camera
 		{
