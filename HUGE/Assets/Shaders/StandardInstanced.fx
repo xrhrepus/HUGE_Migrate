@@ -154,7 +154,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 	float4 color = (ambient + diffuse) * textureColor * 1 + specular * specularFactor;
 
-	if (true)
+	if (dot(DirectionalLightBuffer[0].LightDirection, normal) < 0.0f)
 	{
 		// NDC:   +---------+        UV: +----------->
 		//       /   1     /|            |(0, 0)    |
@@ -173,8 +173,8 @@ float4 PS(VS_OUTPUT input) : SV_Target
 		{
 			float savedDepth = depthMap.Sample(textureSampler, shadowUV).r;
 			if (savedDepth > actualDepth + 0.008f)
-				//color = ambient * textureColor;
-                color = float4(0.0f,0.0f,0.0f,1.0f);
+				color = ambient * textureColor;
+                //color = float4(0.0f,0.0f,0.0f,1.0f);
 		}
 	}
 
